@@ -2,7 +2,7 @@
 
 # HopShift
 
-**Welcome to HopShift** — a compact, open-hardware platform designed to demystify the invisible world of 2.4 GHz wireless communication.
+**Welcome to HopShift**, a compact, open-hardware platform designed to demystify the invisible world of 2.4 GHz wireless communication.
 
 Whether you're a student exploring RF fundamentals, a maker curious about how WiFi and Bluetooth coexist, or a researcher studying wireless protocols, HopShift gives you hands-on access to the electromagnetic spectrum that powers billions of devices around us.
 
@@ -10,15 +10,15 @@ Whether you're a student exploring RF fundamentals, a maker curious about how Wi
 
 HopShift is a portable RF experimentation platform built around an ESP32 microcontroller and dual NRF24L01+ transceivers. It's designed for controlled laboratory environments where you can safely explore wireless communication concepts, protocol behavior, and the fascinating dance of signals in the 2.4 GHz ISM band.
 
-Think of it as a learning laboratory in your hands — a tool that transforms abstract RF theory into tangible experiments you can run, modify, and understand.
+Think of it as a learning laboratory in your hands, a tool that transforms abstract RF theory into tangible experiments you can run, modify, and understand.
 
 ## Why "HopShift"?
 
-The name captures the essence of modern wireless communication. In the crowded 2.4 GHz spectrum, devices don't just sit on one frequency — they **hop** rapidly between channels and **shift** their spectral position to avoid interference and maintain reliable connections.
+The name captures the essence of modern wireless communication. In the crowded 2.4 GHz spectrum, devices don't just sit on one frequency. They **hop** rapidly between channels and **shift** their spectral position to avoid interference and maintain reliable connections.
 
 This technique, called **frequency hopping spread spectrum (FHSS)**, is how Bluetooth devices can operate alongside WiFi routers without destroying each other's signals. It's how military radios resist jamming. It's how Zigbee sensors coordinate in smart homes.
 
-HopShift lets you see this invisible choreography in action. You can watch channels sweep, observe interference patterns, and understand why wireless systems behave the way they do. The name isn't just clever — it's a description of what you'll be exploring.
+HopShift lets you see this invisible choreography in action. You can watch channels sweep, observe interference patterns, and understand why wireless systems behave the way they do. The name isn't just clever, it's a description of what you'll be exploring.
 
 ---
 
@@ -55,14 +55,14 @@ HopShift is an open-hardware research platform built around an ESP32 microcontro
 
 > **Why 100µF capacitors are mandatory:**
 > 
-> The NRF24L01+ draws burst current spikes up to ~160mA during transmission events. Thin PCB traces and wire inductance create impedance that cannot respond instantaneously to these transients. Without bulk capacitance directly at the VCC pin, the supply voltage droops below the NRF24's minimum operating threshold, corrupting SPI transactions and causing transmission failures. The 100µF capacitor acts as a local charge reservoir, absorbing the transient demand before it propagates back to the regulator. This is not optional — it is a hard requirement for reliable operation.
+> The NRF24L01+ draws burst current spikes up to ~160mA during transmission events. Thin PCB traces and wire inductance create impedance that cannot respond instantaneously to these transients. Without bulk capacitance directly at the VCC pin, the supply voltage droops below the NRF24's minimum operating threshold, corrupting SPI transactions and causing transmission failures. The 100µF capacitor acts as a local charge reservoir, absorbing the transient demand before it propagates back to the regulator. This is not optional, it is a hard requirement for reliable operation.
 
 ---
 
 ## Features
 
 - Dual independent NRF24L01+ modules on separate SPI buses (no bus contention)
-- Simultaneous transmit and receive capability across 126 channels (2.400–2.525 GHz)
+- Simultaneous transmit and receive capability across 126 channels (2.400-2.525 GHz)
 - Configurable data rates (250kbps, 1Mbps, 2Mbps) and transmit power levels
 - Portable battery-powered operation with integrated charging
 - External antenna support for controlled radiation pattern experimentation
@@ -90,7 +90,7 @@ hopshift/
 ├── assets/              # Renders, diagrams, images
 ├── tools/               # Companion scripts and analysis utilities
 ├── .gitignore
-├── LICENSE              # CERN-OHL-S v2
+├── LICENSE              # CERN OHL-S v2
 ├── README.md
 ├── CONTRIBUTING.md
 └── SECURITY.md
@@ -102,8 +102,8 @@ hopshift/
 
 HopShift uses a dual-SPI topology to eliminate bus contention and enable simultaneous operation of both NRF24L01+ modules:
 
-- **ESP32 HSPI** → NRF24 Module #1 (CE1/CSN1 on GPIO 15/5)
-- **ESP32 VSPI** → NRF24 Module #2 (CE2/CSN2 on GPIO 17/16)
+- **ESP32 HSPI** to NRF24 Module #1 (CE1/CSN1 on GPIO 15/5)
+- **ESP32 VSPI** to NRF24 Module #2 (CE2/CSN2 on GPIO 17/16)
 
 Power flows from the 3.7V Li-ion cell through the TP4056 charge controller to a 3.3V LDO regulator, which supplies the ESP32 and both NRF24 modules. Each NRF24 has a dedicated 100µF decoupling capacitor at its VCC pin to handle transmission current spikes.
 
@@ -139,11 +139,11 @@ Building and modifying HopShift develops practical skills in:
 
 ## Roadmap
 
-**v1.0 (Current)** — Breadboard prototype with external modules, proof-of-concept firmware
+**v1.0 (Current)** - Breadboard prototype with external modules, proof-of-concept firmware
 
-**v2.0** — Custom PCB revision integrating ESP32 and NRF24 modules, optimized power distribution, RP-SMA antenna connectors
+**v2.0** - Custom PCB revision integrating ESP32 and NRF24 modules, optimized power distribution, RP-SMA antenna connectors
 
-**v3.0** — Protocol extensions (Bluetooth LE scanning, Zigbee frame injection), OLED status display, SD card logging
+**v3.0** - Protocol extensions (Bluetooth LE scanning, Zigbee frame injection), OLED status display, SD card logging
 
 ---
 
