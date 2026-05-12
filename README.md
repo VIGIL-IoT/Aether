@@ -1,38 +1,38 @@
 ![License](https://img.shields.io/badge/license-CERN--OHL--S--v2-blue) ![Platform](https://img.shields.io/badge/platform-ESP32-green) ![RF Band](https://img.shields.io/badge/RF-2.4%20GHz-orange) ![Status](https://img.shields.io/badge/status-experimental-yellow)
 
-# HopShift
+# Aether
 
-**Welcome to HopShift**, a compact, open-hardware platform designed to demystify the invisible world of 2.4 GHz wireless communication.
+**Welcome to Aether**, a compact, open-hardware platform designed to demystify the invisible world of 2.4 GHz wireless communication.
 
-Whether you're a student exploring RF fundamentals, a maker curious about how WiFi and Bluetooth coexist, or a researcher studying wireless protocols, HopShift gives you hands-on access to the electromagnetic spectrum that powers billions of devices around us.
+Whether you're a student exploring RF fundamentals, a maker curious about how WiFi and Bluetooth coexist, or a researcher studying wireless protocols, Aether gives you hands-on access to the electromagnetic spectrum that powers billions of devices around us.
 
-## What is HopShift?
+## What is Aether?
 
-HopShift is a portable RF experimentation platform built around an ESP32 microcontroller and dual NRF24L01+ transceivers. It's designed for controlled laboratory environments where you can safely explore wireless communication concepts, protocol behavior, and the fascinating dance of signals in the 2.4 GHz ISM band.
+Aether is a portable RF experimentation platform built around an ESP32 microcontroller and dual NRF24L01+ transceivers. It's designed for controlled laboratory environments where you can safely explore wireless communication concepts, protocol behavior, and the fascinating dance of signals in the 2.4 GHz ISM band.
 
 Think of it as a learning laboratory in your hands, a tool that transforms abstract RF theory into tangible experiments you can run, modify, and understand.
 
-## Why "HopShift"?
+## Why "Aether"?
 
 The name captures the essence of modern wireless communication. In the crowded 2.4 GHz spectrum, devices don't just sit on one frequency. They **hop** rapidly between channels and **shift** their spectral position to avoid interference and maintain reliable connections.
 
 This technique, called **frequency hopping spread spectrum (FHSS)**, is how Bluetooth devices can operate alongside WiFi routers without destroying each other's signals. It's how military radios resist jamming. It's how Zigbee sensors coordinate in smart homes.
 
-HopShift lets you see this invisible choreography in action. You can watch channels sweep, observe interference patterns, and understand why wireless systems behave the way they do. The name isn't just clever, it's a description of what you'll be exploring.
+Aether lets you see this invisible choreography in action. You can watch channels sweep, observe interference patterns, and understand why wireless systems behave the way they do. The name isn't just clever, it's a description of what you'll be exploring.
 
 ---
 
 ## Overview
 
-HopShift is an open-hardware research platform built around an ESP32 microcontroller and dual NRF24L01+ transceivers. It enables controlled study of wireless protocol behavior, RF interference patterns, and embedded systems design principles in laboratory environments.
+Aether is an open-hardware research platform built around an ESP32 microcontroller and dual NRF24L01+ transceivers. It enables controlled study of wireless protocol behavior, RF interference patterns, and embedded systems design principles in laboratory environments.
 
-**What HopShift is:**
+**What Aether is:**
 - An educational tool for understanding 2.4 GHz wireless protocols
 - A platform for studying frequency hopping and channel coexistence
 - A hands-on embedded systems learning environment
 - An open-hardware reference design for dual-radio RF experimentation
 
-**What HopShift is NOT:**
+**What Aether is NOT:**
 - A tool for unauthorized wireless interference
 - A device for disrupting commercial or public wireless infrastructure
 - A product intended for deployment outside controlled research settings
@@ -74,7 +74,7 @@ HopShift is an open-hardware research platform built around an ESP32 microcontro
 ## Repository Structure
 
 ```
-hopshift/
+aether/
 ├── firmware/
 │   ├── esp32/           # ESP32 application code (SPI init, radio control loop)
 │   └── nrf24/           # NRF24L01+ hardware abstraction layer
@@ -100,7 +100,7 @@ hopshift/
 
 ## Architecture
 
-HopShift uses a dual-SPI topology to eliminate bus contention and enable simultaneous operation of both NRF24L01+ modules:
+Aether uses a dual-SPI topology to eliminate bus contention and enable simultaneous operation of both NRF24L01+ modules:
 
 - **ESP32 HSPI** to NRF24 Module #1 (CE1/CSN1 on GPIO 15/5)
 - **ESP32 VSPI** to NRF24 Module #2 (CE2/CSN2 on GPIO 17/16)
@@ -113,7 +113,7 @@ The ESP32 coordinates both radios, configuring channels, data rates, and transmi
 
 ## RF Learning Objectives
 
-HopShift enables hands-on exploration of these research questions:
+Aether enables hands-on exploration of these research questions:
 
 - How do WiFi, Bluetooth, and Zigbee coexist in the 2.4 GHz band without mutual destruction?
 - What is the probability of packet collision when two frequency-hopping systems share spectrum?
@@ -126,7 +126,7 @@ HopShift enables hands-on exploration of these research questions:
 
 ## Embedded Systems Goals
 
-Building and modifying HopShift develops practical skills in:
+Building and modifying Aether develops practical skills in:
 
 - **SPI communication:** Multi-device bus management, register-level peripheral control
 - **Interrupt handling:** GPIO-driven event detection for packet reception
@@ -150,19 +150,19 @@ Building and modifying HopShift develops practical skills in:
 ## Legal Disclaimer
 
 > [!WARNING]
-> HopShift is an educational RF research platform. It exists to study wireless communication systems, protocol behavior, and interference concepts in controlled environments. All experimentation must comply with applicable local laws, RF regulations, and spectrum authority guidelines. This project does not support, endorse, or facilitate unauthorized disruption of wireless communications. Users bear sole responsibility for lawful and ethical operation.
+> Aether is an educational RF research platform. It exists to study wireless communication systems, protocol behavior, and interference concepts in controlled environments. All experimentation must comply with applicable local laws, RF regulations, and spectrum authority guidelines. This project does not support, endorse, or facilitate unauthorized disruption of wireless communications. Users bear sole responsibility for lawful and ethical operation.
 
 ---
 
 ## Contributing
 
-We welcome contributions that improve HopShift's educational value, hardware design, or firmware capabilities. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for our development process, coding standards, and pull request guidelines.
+We welcome contributions that improve Aether's educational value, hardware design, or firmware capabilities. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for our development process, coding standards, and pull request guidelines.
 
 ---
 
 ## License
 
-HopShift is licensed under the **CERN Open Hardware Licence Version 2 - Strongly Reciprocal (CERN-OHL-S v2)**. This license ensures that all modifications and derivatives remain open, fostering a collaborative hardware development ecosystem. The full license text is available in [LICENSE](LICENSE).
+Aether is licensed under the **CERN Open Hardware Licence Version 2 - Strongly Reciprocal (CERN-OHL-S v2)**. This license ensures that all modifications and derivatives remain open, fostering a collaborative hardware development ecosystem. The full license text is available in [LICENSE](LICENSE).
 
 We chose CERN-OHL-S v2 because it:
 - Guarantees freedom to study, modify, and share hardware designs
