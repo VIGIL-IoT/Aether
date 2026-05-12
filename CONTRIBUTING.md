@@ -1,6 +1,6 @@
-# Contributing to HopShift
+# Contributing to Aether
 
-We appreciate your interest in improving HopShift. This document outlines our development process, coding standards, and contribution guidelines.
+We appreciate your interest in improving Aether. This document outlines our development process, coding standards, and contribution guidelines.
 
 ---
 
@@ -8,14 +8,14 @@ We appreciate your interest in improving HopShift. This document outlines our de
 
 We follow **Conventional Commits** for clear, structured commit history:
 
-- `feat:` — New feature or capability
-- `fix:` — Bug fix or correction
-- `docs:` — Documentation changes only
-- `hw:` — Hardware design changes (schematics, PCB, BOM)
-- `rf:` — RF-specific changes (channel maps, power levels, protocol logic)
-- `refactor:` — Code restructuring without behavior change
-- `test:` — Adding or modifying tests
-- `chore:` — Build system, dependencies, tooling
+- `feat:` - New feature or capability
+- `fix:` - Bug fix or correction
+- `docs:` - Documentation changes only
+- `hw:` - Hardware design changes (schematics, PCB, BOM)
+- `rf:` - RF-specific changes (channel maps, power levels, protocol logic)
+- `refactor:` - Code restructuring without behavior change
+- `test:` - Adding or modifying tests
+- `chore:` - Build system, dependencies, tooling
 
 **Examples:**
 ```
@@ -32,10 +32,10 @@ rf: extend channel range to 2.525 GHz
 
 Use descriptive prefixes for branch names:
 
-- `feature/` — New functionality
-- `fix/` — Bug fixes
-- `hw/` — Hardware revisions
-- `docs/` — Documentation improvements
+- `feature/` - New functionality
+- `fix/` - Bug fixes
+- `hw/` - Hardware revisions
+- `docs/` - Documentation improvements
 
 **Examples:**
 ```
@@ -55,7 +55,7 @@ Before submitting a PR, ensure:
 - [ ] Firmware changes tested on physical hardware (if applicable)
 - [ ] Documentation updated to reflect changes
 - [ ] Commit messages follow Conventional Commits format
-- [ ] No scope creep — PR addresses one logical change
+- [ ] No scope creep - PR addresses one logical change
 - [ ] Hardware changes include PDF schematic export
 - [ ] KiCad design rule check passes (for PCB changes)
 
@@ -89,9 +89,9 @@ void nrf_set_channel(uint8_t channel_mhz) {
 
 Every file in `docs/` must include:
 
-1. **Summary** — One-paragraph overview of the document's purpose
-2. **Prerequisites** — Required knowledge or setup before reading
-3. **See Also** — Links to related documentation
+1. **Summary** - One-paragraph overview of the document's purpose
+2. **Prerequisites** - Required knowledge or setup before reading
+3. **See Also** - Links to related documentation
 
 Use code blocks with language tags:
 ```cpp
@@ -128,10 +128,10 @@ void setup() { }
 
 All documentation must be:
 
-- **Technically accurate** — Verify register addresses, pin numbers, frequency ranges
-- **Concise** — No filler or marketing language
-- **Accessible** — Assume reader has basic embedded systems knowledge, but explain RF-specific concepts
-- **Consistent** — Use terminology from the glossary in `docs/rf-notes.md`
+- **Technically accurate** - Verify register addresses, pin numbers, frequency ranges
+- **Concise** - No filler or marketing language
+- **Accessible** - Assume reader has basic embedded systems knowledge, but explain RF-specific concepts
+- **Consistent** - Use terminology from the glossary in `docs/rf-notes.md`
 
 ---
 
@@ -140,7 +140,7 @@ All documentation must be:
 - Features that imply or enable unlawful wireless interference
 - Code that uses "jammer," "killer," or similar terminology
 - Contributions that violate RF regulations in major jurisdictions (FCC, ETSI, ACMA)
-- Scope creep — PRs that bundle unrelated changes
+- Scope creep - PRs that bundle unrelated changes
 - Uncommented or obfuscated code
 - Hardware changes without accompanying documentation
 

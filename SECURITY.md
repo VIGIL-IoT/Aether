@@ -1,12 +1,12 @@
 # Security and Ethical Use Policy
 
-HopShift is an educational platform for studying wireless communication systems. This document outlines our responsible disclosure process, ethical use expectations, and legal compliance requirements.
+Aether is an educational platform for studying wireless communication systems. This document outlines our responsible disclosure process, ethical use expectations, and legal compliance requirements.
 
 ---
 
 ## Responsible Disclosure
 
-If you discover a security vulnerability in HopShift's firmware, hardware design, or documentation, please report it privately:
+If you discover a security vulnerability in Aether's firmware, hardware design, or documentation, please report it privately:
 
 1. **Do not** open a public issue
 2. Use GitHub's [private security advisory feature](https://github.com/[your-repo]/security/advisories/new)
@@ -22,17 +22,17 @@ We will respond within 7 days and work with you to address the issue before publ
 
 ## Ethical Use Expectations
 
-HopShift is designed for controlled laboratory experimentation and education. Users must:
+Aether is designed for controlled laboratory experimentation and education. Users must:
 
 - **Operate only in shielded or isolated environments** where RF emissions cannot interfere with live wireless infrastructure
 - **Obtain explicit permission** before conducting experiments in shared spaces
 - **Comply with all applicable RF regulations** in their jurisdiction (see Legal Compliance below)
-- **Never deploy HopShift** near airports, hospitals, emergency services, or other critical infrastructure
-- **Respect spectrum sharing norms** — the 2.4 GHz ISM band is shared by billions of devices
+- **Never deploy Aether** near airports, hospitals, emergency services, or other critical infrastructure
+- **Respect spectrum sharing norms** - the 2.4 GHz ISM band is shared by billions of devices
 
 ### Prohibited Uses
 
-HopShift must **never** be used to:
+Aether must **never** be used to:
 
 - Disrupt, degrade, or deny wireless services without authorization
 - Interfere with commercial, public, or private wireless networks
@@ -60,7 +60,7 @@ HopShift must **never** be used to:
 ### Australia (ACMA)
 
 - Governed by Radiocommunications (Low Interference Potential Devices) Class Licence 2015
-- Maximum EIRP: 100mW (20 dBm) in 2.4–2.4835 GHz band
+- Maximum EIRP: 100mW (20 dBm) in 2.4-2.4835 GHz band
 
 ### Other Jurisdictions
 
@@ -75,14 +75,14 @@ Consult your local spectrum authority:
 
 ## Reporting Misuse
 
-If you become aware of HopShift being used for unlawful interference or malicious purposes:
+If you become aware of Aether being used for unlawful interference or malicious purposes:
 
 1. **Do not engage directly** with the individual
 2. Report to the appropriate spectrum authority:
    - **US:** FCC Enforcement Bureau (https://consumercomplaints.fcc.gov)
    - **EU:** National regulatory authority in the affected country
    - **Other:** Consult local telecommunications regulator
-3. Notify the HopShift maintainers via security advisory (see above)
+3. Notify the Aether maintainers via security advisory (see above)
 
 We take misuse seriously and will cooperate with authorities investigating unlawful activity.
 
@@ -90,7 +90,7 @@ We take misuse seriously and will cooperate with authorities investigating unlaw
 
 ## Developer Responsibilities
 
-If you modify HopShift's firmware or hardware:
+If you modify Aether's firmware or hardware:
 
 - **Do not increase transmit power** beyond NRF24L01+ datasheet limits (0 dBm max)
 - **Do not remove safety checks** (channel limits, duty cycle restrictions)
@@ -101,14 +101,14 @@ If you modify HopShift's firmware or hardware:
 
 ## Disclaimer
 
-The HopShift project and its contributors are not responsible for:
+The Aether project and its contributors are not responsible for:
 
 - Unlawful use of the platform by third parties
 - Regulatory violations resulting from user modifications
 - Interference caused by improper operation or assembly
 - Legal consequences of non-compliant experimentation
 
-**You are solely responsible for ensuring your use of HopShift complies with applicable laws.**
+**You are solely responsible for ensuring your use of Aether complies with applicable laws.**
 
 ---
 
