@@ -14,11 +14,11 @@ Think of it as a learning laboratory in your hands, a tool that transforms abstr
 
 ## Why "Aether"?
 
-The name captures the essence of modern wireless communication. In the crowded 2.4 GHz spectrum, devices don't just sit on one frequency. They **hop** rapidly between channels and **shift** their spectral position to avoid interference and maintain reliable connections.
+In 19th-century physics, the luminiferous aether was theorized as an invisible medium permeating space, the substrate through which electromagnetic waves propagated. While the Michelson-Morley experiment and subsequent developments in relativity rendered the classical aether obsolete, the term persisted as a cultural reference to invisible transmission, the unseen carrier of signals through empty space.
 
-This technique, called **frequency hopping spread spectrum (FHSS)**, is how Bluetooth devices can operate alongside WiFi routers without destroying each other's signals. It's how military radios resist jamming. It's how Zigbee sensors coordinate in smart homes.
+Modern wireless communication operates on the same conceptual foundation: electromagnetic waves traverse the air, carrying information between devices without physical connection. The 2.4 GHz ISM band is crowded with overlapping protocols, WiFi, Bluetooth, Zigbee, each navigating this shared medium through frequency hopping, channel selection, and adaptive modulation.
 
-Aether lets you see this invisible choreography in action. You can watch channels sweep, observe interference patterns, and understand why wireless systems behave the way they do. The name isn't just clever, it's a description of what you'll be exploring.
+Aether embodies this principle. It is a platform for observing RF signal propagation, studying protocol coexistence, and understanding how wireless systems interact within the electromagnetic spectrum. The name reflects both the historical concept of an invisible transmission medium and the modern reality of wireless experimentation: making the unseen visible, the abstract tangible.
 
 ---
 
