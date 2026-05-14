@@ -9,7 +9,7 @@ Aether is an educational platform for studying wireless communication systems. T
 If you discover a security vulnerability in Aether's firmware, hardware design, or documentation, please report it privately:
 
 1. **Do not** open a public issue
-2. Use GitHub's [private security advisory feature](https://github.com/[your-repo]/security/advisories/new)
+2. Use GitHub's [private security advisory feature](https://github.com/shaxntanu/Aether/security/advisories/new)
 3. Include:
    - Description of the vulnerability
    - Steps to reproduce
