@@ -1,6 +1,6 @@
 ![License](https://img.shields.io/badge/license-CERN--OHL--S--v2-blue) ![Platform](https://img.shields.io/badge/platform-ESP32-green) ![RF Band](https://img.shields.io/badge/RF-2.4%20GHz-orange) ![Status](https://img.shields.io/badge/status-experimental-yellow)
 
-# Aether
+# Aether 
 
 **Welcome to Aether**, a compact, open-hardware platform designed to demystify the invisible world of 2.4 GHz wireless communication.
 
