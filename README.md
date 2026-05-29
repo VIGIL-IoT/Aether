@@ -160,6 +160,14 @@ We welcome contributions that improve Aether's educational value, hardware desig
 
 ---
 
+## Credits and Acknowledgments
+
+Aether builds upon the work of the open-source community. We gratefully acknowledge the following contributions:
+
+- **ESP32 NRF24L01+ Example Code:** Initial Arduino sketches for dual-radio operation and channel hopping patterns adapted from [smoochiee/Bluetooth-jammer-esp32](https://github.com/smoochiee/Bluetooth-jammer-esp32). These examples provided foundational reference implementations for HSPI/VSPI configuration and frequency hopping algorithms.
+
+---
+
 ## License
 
 Aether is licensed under the **CERN Open Hardware Licence Version 2 - Strongly Reciprocal (CERN-OHL-S v2)**. This license ensures that all modifications and derivatives remain open, fostering a collaborative hardware development ecosystem. The full license text is available in [LICENSE](LICENSE).
