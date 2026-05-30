@@ -9,8 +9,8 @@ This document describes the hardware and firmware architecture of Aether, includ
 Aether uses a dual-radio architecture to enable simultaneous transmission and reception across independent 2.4 GHz channels. The ESP32 acts as the central controller, managing two NRF24L01+ transceivers via separate SPI buses.
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                     ESP32                           │
+┌────────────────────────────────────────────────────┐
+│                     ESP32                          │
 │  ┌──────────────┐              ┌──────────────┐    │
 │  │   HSPI       │              │   VSPI       │    │
 │  │  Master      │              │  Master      │    │
@@ -19,12 +19,12 @@ Aether uses a dual-radio architecture to enable simultaneous transmission and re
 └─────────┼─────────────────────────────┼────────────┘
           │                             │
           │                             │
-    ┌─────▼──────┐              ┌──────▼─────┐
-    │  NRF24 #1  │              │  NRF24 #2  │
-    │  (HSPI)    │              │  (VSPI)    │
-    │            │              │            │
-    │  Ch 0-125  │              │  Ch 0-125  │
-    └────────────┘              └────────────┘
+    ┌─────▼──────┐               ┌──────▼─────┐
+    │  NRF24 #1  │               │  NRF24 #2  │
+    │  (HSPI)    │               │  (VSPI)    │
+    │            │               │            │
+    │  Ch 0-125  │               │  Ch 0-125  │
+    └────────────┘               └────────────┘
 ```
 
 ## Hardware Topology
@@ -135,10 +135,10 @@ GND  → GND (both radios)
        │
        ├──────────────┬──────────────┬──────────────┐
        │              │              │              │
-   ┌───▼───┐    ┌────▼────┐   ┌────▼────┐   ┌────▼────┐
-   │ ESP32 │    │ NRF24#1 │   │ NRF24#2 │   │ Power   │
-   │       │    │ + 100µF │   │ + 100µF │   │ LED     │
-   └───────┘    └─────────┘   └─────────┘   └─────────┘
+   ┌───▼───┐     ┌────▼────┐    ┌────▼────┐    ┌────▼────┐
+   │ ESP32 │     │ NRF24#1 │    │ NRF24#2 │    │ Power   │
+   │       │     │ + 100µF │    │ + 100µF │    │ LED     │
+   └───────┘     └─────────┘    └─────────┘    └─────────┘
 ```
 
 ### Critical: Decoupling Capacitors
