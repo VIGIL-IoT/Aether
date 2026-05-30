@@ -1,242 +1,430 @@
 # Aether Design Journal
 
-## Purpose
+## Introduction
 
-This document records major engineering decisions made during the development of Aether. Each entry explains the problem, alternatives considered, and rationale for the chosen solution.
+This journal documents the design decisions, learning process, and evolution of Aether from initial concept to working prototype. Unlike typical project documentation that presents polished final results, this journal preserves the actual thought process, uncertainties, and iterative nature of building something new.
 
----
-
-## Entry 1: Why ESP32?
-
-**Date:** Initial design phase
-
-**Problem:** Need a microcontroller capable of managing two independent SPI buses for dual NRF24L01+ operation.
-
-**Alternatives Considered:**
-
-1. **Arduino Mega 2560**
-   - Pros: Familiar platform, plenty of GPIO
-   - Cons: Single hardware SPI bus, 5V I/O requires level shifting, slower clock (16 MHz)
-   
-2. **STM32F4 (e.g., STM32F407)**
-   - Pros: Multiple SPI buses, fast (168 MHz), excellent real-time performance
-   - Cons: Steeper learning curve, less Arduino ecosystem support, more expensive
-   
-3. **ESP8266**
-   - Pros: Low cost, WiFi capability, 3.3V I/O
-   - Cons: Single hardware SPI bus (HSPI), limited GPIO, less processing power
-   
-4. **ESP32-WROOM-32** ✓
-   - Pros: Dual hardware SPI (HSPI + VSPI), 240 MHz dual-core, 3.3V I/O, mature Arduino support, integrated WiFi/BT (can be disabled)
-   - Cons: Slightly more expensive than ESP8266 (~$4 vs ~$2)
-
-**Decision:** ESP32-WROOM-32
-
-**Rationale:** The dual SPI buses are essential for true simultaneous radio operation. The ESP32's processing power allows for future features like real-time telemetry logging and mesh protocol implementation. The Arduino ecosystem support via ESP-IDF makes development accessible to students and makers.
+Aether started as a learning project, not an expert system. I'm a first-year ECE student trying to bridge the gap between textbook theory and real wireless hardware. This document is honest about what I knew, what I didn't know, and why I made the choices I made.
 
 ---
 
-## Entry 2: Why NRF24L01+?
+## Project Origin
 
-**Date:** Initial design phase
+### The Spark
 
-**Problem:** Select 2.4 GHz transceiver for educational RF experimentation.
+The project started after watching a YouTube video demonstrating ESP32 and NRF24L01+ modules being used for RF experimentation. I didn't fully understand what was happening in the video, but something about seeing wireless signals being manipulated in real-time was fascinating.
 
-**Alternatives Considered:**
+I had taken an introductory circuits course and done some Arduino projects, but wireless communication felt like magic. How do antennas actually transmit information? How do devices on the same frequency not interfere with each other? How does frequency hopping work?
 
-1. **ESP32 Built-in WiFi**
-   - Pros: No external hardware needed, high data rate
-   - Cons: Complex protocol stack, limited low-level control, can't easily implement custom modulation
-   
-2. **CC2500 (2.4 GHz transceiver)**
-   - Pros: Similar capabilities to NRF24, good documentation
-   - Cons: Less common, fewer Arduino libraries, harder to source
-   
-3. **RFM69HCW (433/915 MHz transceiver)**
-   - Pros: Sub-GHz bands less crowded, better range
-   - Cons: Different frequency band (not 2.4 GHz ISM), regional frequency variations
-   
-4. **NRF24L01+** ✓
-   - Pros: Extremely common, well-documented, mature RF24 library, low cost ($1-3), 126 channels, configurable data rates, SPI interface
-   - Cons: Limited TX power (0 dBm standard, +20 dBm with PA+LNA), no built-in frequency hopping
+### The Motivation
 
-**Decision:** NRF24L01+
+I wasn't trying to become an RF expert overnight. I knew I'd be taking courses like Signal Processing, Communication Systems, and Wireless Networks in the future. I wanted to build something now that would make those courses easier to understand later.
 
-**Rationale:** The NRF24L01+ is the most accessible 2.4 GHz transceiver for educational purposes. The RF24 library provides register-level control while abstracting SPI complexity. The 2.4 GHz band is globally harmonized and crowded with WiFi/Bluetooth, making it ideal for studying interference and coexistence.
+The idea was simple: build a physical platform that lets me experiment with wireless concepts hands-on. When I eventually learn about modulation, propagation, or interference in class, I'll have hardware to test those concepts immediately.
+
+### The Philosophy
+
+I decided to follow a "Build First, Understand Deeper Later" approach. Rather than waiting until I understood every RF concept, I'd start building and learn the theory alongside the hardware. This meant accepting that:
+- I'd make mistakes
+- I'd have to iterate
+- Some design choices would be suboptimal
+- I'd learn more from building than from reading
+
+This project is as much about the learning process as it is about the final hardware.
 
 ---
 
-## Entry 3: Why Dual SPI Architecture?
+## Design Philosophy
 
-**Date:** Initial design phase
+### Learn by Building
 
-**Problem:** Enable simultaneous transmission and reception on independent channels.
+Textbooks teach theory. YouTube teaches techniques. But neither teaches the intuition that comes from debugging a circuit at 2 AM when nothing works. Aether exists because I believe the best way to learn wireless communication is to build wireless communication systems.
 
-**Alternatives Considered:**
+### Build First, Optimize Later
 
-1. **Single SPI Bus with Time-Division Multiplexing**
-   - Pros: Simpler wiring, fewer GPIO pins used
-   - Cons: Cannot access both radios simultaneously, limits experiment types
-   
-2. **Software SPI (Bit-Banging) for Second Radio**
-   - Pros: Can use any GPIO pins
-   - Cons: Slower, CPU-intensive, unreliable at high speeds
-   
-3. **Dual Hardware SPI Buses** ✓
-   - Pros: True simultaneous operation, no bus contention, hardware-accelerated
-   - Cons: More complex wiring, uses more GPIO pins
+Perfect is the enemy of done. Version 1.0 doesn't need to be optimal. It needs to work well enough to teach me something. I can always build v2.0 with the lessons learned from v1.0.
 
-**Decision:** Dual hardware SPI buses (HSPI + VSPI)
+### Embrace Iteration
 
-**Rationale:** The ability to operate both radios simultaneously is fundamental to Aether's educational mission. Experiments like "transmit on channel 10 while receiving on channel 50" or "measure interference radius with one radio while the other scans" require independent bus access. The ESP32's dual SPI controllers make this possible without performance compromise.
+Every mistake is a learning opportunity. Every failed design is data. The goal isn't to avoid failure—it's to fail quickly, learn from it, and improve.
 
 ---
 
-## Entry 4: Why Battery Powered?
+## Major Design Decisions
 
-**Date:** Initial design phase
+### Why ESP32?
 
-**Problem:** Determine primary power source for portable operation.
+**The Honest Answer:** I already had ESP32 boards.
 
-**Alternatives Considered:**
+I'd used them for previous Arduino projects, and they worked. When I started researching RF experimentation platforms, nearly every project I found used ESP32. The ecosystem was mature, documentation was abundant, and community support was strong.
 
-1. **USB Power Only**
-   - Pros: Simple, no battery management needed, unlimited runtime
-   - Cons: Tethered to computer, limits mobility for range tests
-   
-2. **AA Battery Pack (4× AA = 6V)**
-   - Pros: Easy to replace, no charging circuit needed
-   - Cons: Requires voltage regulator, non-rechargeable (or expensive NiMH), bulky
-   
-3. **3.7V Li-ion with TP4056 Charger** ✓
-   - Pros: Rechargeable, high energy density, single-cell simplicity, integrated charge controller
-   - Cons: Requires protection circuit, fire risk if mishandled
+**Did I consider alternatives?**
 
-**Decision:** 3.7V Li-ion (18650 cell) with TP4056 charge controller
+Not really. I looked briefly at STM32 and RP2040, but:
+- STM32 felt more complex to set up
+- RP2040 didn't have as many wireless examples
+- Arduino Mega was too slow and used 5V logic
 
-**Rationale:** Portability is essential for distance testing and field experiments. Li-ion provides the best energy density (2500 mAh in 18650 form factor = ~23 hours runtime). The TP4056 module is inexpensive ($0.50) and includes overcharge protection. The 3.7V nominal voltage is close to the 3.3V rail, minimizing regulator dropout.
+**What made ESP32 attractive:**
+- Dual-core processor (seemed powerful enough)
+- Multiple SPI peripherals (important for dual-radio design)
+- Integrated WiFi and Bluetooth (useful for future experiments)
+- 3.3V I/O (direct interface with NRF24)
+- Flexible GPIO matrix
+- Compact form factor
+- Good balance of capability and cost (~$5-10)
 
-**Safety Consideration:** Added to documentation: proper Li-ion handling, protection circuit requirements, disposal procedures.
+**What I didn't know at the time:**
+- How to use both cores effectively
+- Whether 240 MHz was actually necessary
+- How the SPI peripherals differed from each other
+- What "flexible GPIO matrix" actually meant in practice
+
+I chose ESP32 because it was practical, available, and had a low barrier to entry. That was enough.
+
+### Why NRF24L01+?
+
+**The Honest Answer:** The YouTube video used them.
+
+When I started researching, NRF24L01+ modules appeared everywhere:
+- Cheap (~$1-3 per module)
+- Widely available
+- Tons of tutorials
+- Existing Arduino libraries
+- Simple SPI interface
+
+**Did I know about alternatives?**
+
+Not initially. I later learned about:
+- CC2500 (similar 2.4 GHz transceiver)
+- nRF52840 (more capable, integrated MCU)
+- SX127x family (LoRa, different use case)
+
+But by then, I'd already ordered NRF24 modules and started learning the RF24 library.
+
+**What I liked about NRF24:**
+- 2.4 GHz ISM band (globally unlicensed)
+- 126 channels (seemed like a lot)
+- Configurable data rates and TX power
+- Low cost meant I could buy extras without worry
+- If I broke one, replacement was cheap
+
+**What I didn't understand:**
+- What "GFSK modulation" meant
+- Why there were 126 channels but only 1 MHz spacing
+- How this compared to WiFi or Bluetooth
+- What "auto-acknowledgment" actually did
+
+I chose NRF24 because it was accessible and had a low learning curve. I could start experimenting immediately without getting lost in datasheets.
+
+### Why Dual NRF24 Modules?
+
+**The Honest Answer:** It looked cooler.
+
+Initially, the motivation was aesthetic. A single radio felt boring. Two radios with dual antennas looked more interesting, more capable, more like a "real" RF tool.
+
+But as I researched, I found technical justification:
+- **Independent operation:** Each radio on its own SPI bus
+- **Simultaneous experiments:** Transmit on one, receive on another
+- **Channel studies:** Test interference between channels
+- **Protocol coexistence:** Simulate multiple devices
+
+**The ESP32 advantage:**
+
+ESP32 has two hardware SPI controllers (HSPI and VSPI). This meant I could control both radios independently without bus contention. I didn't fully understand what "bus contention" meant at first, but I knew it was bad.
+
+**What I was thinking:**
+- More radios = more experiments
+- Dual antennas look professional
+- If one radio breaks, I have a backup
+- Future experiments might need simultaneous TX/RX
+
+**What I wasn't thinking:**
+- Power consumption doubles
+- Firmware complexity increases
+- Debugging two radios is harder than one
+- Do I actually need simultaneous operation?
+
+In hindsight, dual radios was probably overkill for v1.0. But it pushed me to learn about SPI bus management, GPIO allocation, and concurrent hardware control. The "unnecessary" complexity taught me more than a simple design would have.
+
+### Why Battery Power?
+
+**The Practical Answer:** I wanted it to be portable.
+
+I envisioned Aether as something I could throw in my backpack and use anywhere:
+- In the lab
+- In the dorm
+- Outside on the quad
+- At a coffee shop
+
+A USB cable tethering it to a laptop defeated that vision.
+
+**The Learning Answer:** I wanted to design a battery-powered system.
+
+I'd never integrated a rechargeable battery into a project before. This was an opportunity to learn:
+- Li-ion battery characteristics
+- Charging circuits (TP4056)
+- Voltage regulation
+- Power budgeting
+- Battery protection
+
+**Design goals:**
+- Self-contained operation
+- No external power bank
+- Clean appearance (no cables)
+- Easy to charge (USB input)
+- Safe (overcharge/overdischarge protection)
+
+**Component choices:**
+- **Battery:** 18650 Li-ion cell (2000-3500 mAh)
+  - Why? Cheap, available, good capacity
+  - Downside: Bulky, requires holder
+- **Charger:** TP4056 module
+  - Why? Cheap, simple, includes protection
+  - Downside: 1A charge current (slow)
+- **Regulator:** AMS1117-3.3 LDO
+  - Why? Simple, cheap, 1A output
+  - Downside: Inefficient (linear regulator)
+
+**What I didn't consider:**
+- Buck converter for better efficiency
+- Battery voltage monitoring
+- Low-battery shutdown
+- Sleep modes for extended runtime
+
+Battery power made Aether feel like a real product, not just a breadboard experiment. It also forced me to think about power consumption, which is critical for any portable wireless device.
+
+### Why No OLED Display?
+
+**The Honest Answer:** I didn't want to deal with it yet.
+
+An OLED display would be cool. It could show:
+- Current channel
+- TX power level
+- Packet count
+- Battery voltage
+
+But adding a display meant:
+- More power consumption
+- More firmware complexity
+- More cost
+- More things to debug
+
+For v1.0, I wanted to focus on getting the RF hardware working. Serial output to a laptop was good enough for initial experiments. If Aether proves useful, v2.0 can add a display.
+
+**The minimalist philosophy:**
+
+Every feature added is a feature that can break. Start minimal, add features incrementally. This keeps the project manageable and reduces the chance of getting overwhelmed.
 
 ---
 
-## Entry 5: Why 100µF Decoupling Capacitors?
+## Learning Objectives
 
-**Date:** Early prototyping phase
+### What I Wanted to Learn
 
-**Problem:** NRF24L01+ modules failing to initialize, random SPI timeouts, inconsistent transmission.
+**RF Fundamentals:**
+- How do antennas work?
+- What is frequency hopping?
+- How do signals propagate through space?
+- What causes interference?
 
-**Initial Hypothesis:** Wiring error or defective modules.
+**Embedded Systems:**
+- Multi-device SPI communication
+- GPIO management
+- Interrupt handling
+- Power management
 
-**Investigation:**
-- Verified wiring with multimeter (continuity test)
-- Swapped NRF24 modules (problem persisted)
-- Reduced SPI clock speed from 16 MHz to 10 MHz (slight improvement)
-- Measured VCC rail with oscilloscope during TX burst
+**Hardware Design:**
+- PCB layout for RF circuits
+- Power distribution
+- Decoupling strategies
+- Antenna placement
 
-**Observation:** VCC drooped from 3.3V to 2.8V during transmission, lasting ~50 µs.
+**Practical Skills:**
+- Using a spectrum analyzer
+- Debugging with a logic analyzer
+- Measuring RF power
+- Characterizing range and interference
 
-**Root Cause:** NRF24L01+ draws burst current up to 160 mA during PA ramp-up. PCB trace inductance and regulator response time cannot supply this transient demand fast enough.
+### What I Didn't Know
 
-**Solution Tested:**
-- 10µF ceramic capacitor: Insufficient (still seeing 2.9V droop)
-- 47µF electrolytic capacitor: Better (3.0V droop)
-- 100µF electrolytic capacitor: Stable (3.2V droop, within tolerance)
+At the start of this project, I had massive knowledge gaps:
+- I didn't know what "GFSK modulation" meant
+- I didn't know why 100µF capacitors were critical
+- I didn't know how WiFi and Bluetooth coexisted
+- I didn't know what "path loss" was
+- I didn't know how to read a datasheet properly
 
-**Decision:** Mandate 100µF electrolytic capacitor at each NRF24 VCC pin.
+**And that was okay.**
 
-**Rationale:** The capacitor acts as a local charge reservoir, absorbing the transient current demand before it propagates back to the regulator. This is a hard requirement for reliable operation, not an optional improvement.
-
-**Documentation Impact:** Added prominent warning in README, architecture.md, and setup-guide.md.
-
----
-
-## Entry 6: Why Arduino Framework Instead of ESP-IDF?
-
-**Date:** Initial design phase
-
-**Problem:** Choose development framework for ESP32 firmware.
-
-**Alternatives Considered:**
-
-1. **ESP-IDF (Native Espressif Framework)**
-   - Pros: Full hardware control, better performance, FreeRTOS integration
-   - Cons: Steeper learning curve, more boilerplate code, less accessible to beginners
-   
-2. **Arduino Framework (ESP32 Arduino Core)** ✓
-   - Pros: Familiar API, extensive library ecosystem (RF24, ezButton), faster prototyping
-   - Cons: Slight performance overhead, abstracts some low-level details
-
-**Decision:** Arduino framework via ESP32 Arduino Core
-
-**Rationale:** Aether is an educational platform. The Arduino ecosystem lowers the barrier to entry for students and makers. The RF24 library is mature and well-documented in the Arduino context. Performance overhead is negligible for this application (channel hopping is limited by NRF24 PLL settling time, not CPU speed).
-
-**Future Consideration:** May provide ESP-IDF version for advanced users who want FreeRTOS task management or lower-level control.
+The point of Aether is to fill those gaps through hands-on experimentation. Every time something doesn't work, I learn something new. Every time I have to debug a problem, I understand the system better.
 
 ---
 
-## Entry 7: Why Constant Carrier Mode?
+## Vision for Aether v1.0
 
-**Date:** Firmware development phase
+### Design Goals
 
-**Problem:** Need a simple way to verify RF transmission without implementing a receiver.
+Aether v1.0 should be:
+- **Compact:** Fits in a backpack
+- **Affordable:** Total cost under $50
+- **Portable:** Battery-powered, no cables
+- **Practical:** Actually useful for experiments
+- **Minimal:** No unnecessary features
 
-**Alternatives Considered:**
+### Planned Hardware
 
-1. **Packet Transmission with Dummy Payload**
-   - Pros: More realistic protocol behavior
-   - Cons: Requires receiver to verify, harder to see on spectrum analyzer (bursty)
-   
-2. **Constant Carrier (Unmodulated CW)** ✓
-   - Pros: Easy to verify with spectrum analyzer or RTL-SDR, continuous signal (easier to measure)
-   - Cons: Violates FCC Part 15 hopping requirements (must use in shielded environment)
+**Core Components:**
+- ESP32-WROOM-32 development board
+- 2× NRF24L01+ modules (PA+LNA variant for better range)
+- 2× External antennas (RP-SMA connectors)
+- 18650 Li-ion battery (2500 mAh)
+- TP4056 charging module
+- AMS1117-3.3 voltage regulator
+- Slide switch (power on/off)
+- Power LED (3mm, current-limited)
 
-**Decision:** Implement constant carrier mode using `startConstCarrier()` function.
+**What's NOT included in v1.0:**
+- OLED display (adds complexity, power consumption, cost)
+- SD card logging (can use serial output for now)
+- GPS module (not needed for initial experiments)
+- Multiple battery cells (single cell is simpler)
 
-**Rationale:** For initial testing and educational demonstrations, constant carrier provides immediate visual feedback on spectrum analyzer. The regulatory limitation is acceptable because Aether is designed for laboratory use. Added prominent warnings in documentation about shielded environment requirement.
+### The Philosophy
 
----
-
-## Entry 8: Why RP-SMA Antenna Connectors?
-
-**Date:** PCB design phase (planned for v2.0)
-
-**Problem:** Choose antenna connection method for custom PCB.
-
-**Alternatives Considered:**
-
-1. **PCB Trace Antenna (Integrated)**
-   - Pros: No external connector needed, lower cost, compact
-   - Cons: Fixed radiation pattern, difficult to optimize, limited range
-   
-2. **U.FL Connector (Micro-Coax)**
-   - Pros: Very compact, low cost
-   - Cons: Fragile, requires adapter for standard antennas, limited mating cycles
-   
-3. **RP-SMA Connector** ✓
-   - Pros: Robust, standard 2.4 GHz antennas widely available, many mating cycles
-   - Cons: Larger footprint, slightly more expensive
-
-**Decision:** RP-SMA connectors for external antennas (v2.0 PCB)
-
-**Rationale:** Educational platform benefits from antenna experimentation (dipole, Yagi, patch, etc.). RP-SMA is the de facto standard for 2.4 GHz equipment. Robustness is important for repeated assembly/disassembly in classroom settings.
+Aether v1.0 should feel like a purpose-built engineering tool, not a feature-packed development board. Every component should have a clear purpose. If a feature doesn't directly support RF experimentation or learning, it can wait for v2.0.
 
 ---
 
-## Future Entries
+## Aether Design Principles
 
-As Aether evolves, document:
-- PCB layout decisions (2-layer vs. 4-layer, ground plane strategy)
-- Enclosure design choices (material, antenna placement, thermal management)
-- Firmware architecture evolution (telemetry layer, mesh protocol)
-- Component selection for production version (if applicable)
+### 1. Learn by Building
+
+**Principle:** The best way to understand wireless communication is to build wireless communication systems.
+
+Reading about modulation is useful. Debugging why your modulated signal isn't being received is educational. Theory provides the map, but building provides the territory.
+
+### 2. Simplicity Over Features
+
+**Principle:** Start with the minimum viable design. Add features only when needed.
+
+It's tempting to add every cool feature you can think of. But every feature is a potential failure point. Start simple, prove the concept, then iterate. A working simple design beats a broken complex one.
+
+### 3. Portability Matters
+
+**Principle:** A tool you can carry is a tool you'll actually use.
+
+Aether should be something I can grab and use anywhere. Portability isn't just convenience—it enables spontaneous experimentation. If I see an interesting RF environment, I want to be able to test it immediately.
+
+### 4. Educational Value First
+
+**Principle:** Optimize for learning, not performance.
+
+Aether isn't trying to be the best RF platform. It's trying to be the best learning platform. If a design choice makes the system easier to understand, that's more valuable than a 10% performance improvement.
+
+### 5. Affordability Enables Accessibility
+
+**Principle:** Keep costs low so others can build their own.
+
+If Aether costs $500, only a few people will build it. If it costs $50, many more people can experiment with RF concepts. Affordability democratizes learning.
+
+### 6. Function Before Complexity
+
+**Principle:** Get it working first, optimize later.
+
+Version 1.0 doesn't need to be perfect. It needs to work well enough to teach something. Once it works, you can measure, analyze, and improve. But you can't improve something that doesn't work at all.
+
+### 7. Grow Through Iteration
+
+**Principle:** Every version teaches you how to build the next version.
+
+Aether v1.0 will have flaws. That's expected. The goal is to learn from those flaws and build a better v2.0. Embrace iteration as part of the design process.
 
 ---
 
-## Lessons for Future Projects
+## Future Revisions
 
-1. **Decoupling is not optional:** Always check datasheet for transient current requirements
-2. **Dual SPI was worth the complexity:** Enabled experiments that would be impossible otherwise
-3. **Arduino ecosystem accessibility:** Lowering barrier to entry increases educational impact
-4. **Document as you go:** Easier to record decisions when context is fresh
-5. **Regulatory compliance from day one:** Easier to design for compliance than retrofit
+### Lessons for v2.0
+
+As I build v1.0, I'm keeping notes on what to improve:
+
+**Hardware:**
+- Custom PCB (eliminate breadboard fragility)
+- Better antenna connectors (RP-SMA on PCB)
+- Battery voltage monitoring (ADC input)
+- Proper decoupling (100µF caps directly on PCB)
+- Test points for debugging (SPI signals, power rails)
+
+**Firmware:**
+- Telemetry logging (timestamp, channel, RSSI)
+- Serial command interface (configure without recompiling)
+- Battery monitoring (warn before shutdown)
+- Sleep modes (extend battery life)
+
+**Features to Consider:**
+- OLED display (if v1.0 proves useful)
+- SD card logging (for long experiments)
+- External LNA (for RSSI measurement)
+- Rotary encoder (menu navigation)
+
+### Long-Term Vision
+
+If Aether proves valuable as a learning tool, future versions could:
+- Support 5 GHz band (ESP32 + additional transceiver)
+- Add GPS (outdoor propagation studies)
+- Include IMU (orientation effects on signal)
+- Support mesh networking (multi-node experiments)
+- Integrate with GNU Radio (software-defined radio)
+
+But all of that depends on whether v1.0 actually teaches me something useful.
+
+---
+
+## Reflection
+
+### What This Project Is
+
+Aether is a learning platform disguised as an RF tool. It's a way to make abstract wireless concepts tangible. It's a bridge between textbook theory and real-world systems.
+
+### What This Project Isn't
+
+Aether isn't trying to be:
+- A commercial product
+- A research-grade instrument
+- The optimal RF platform
+- A finished, polished system
+
+It's a student project. It's messy, iterative, and imperfect. And that's exactly what makes it valuable for learning.
+
+### Why Document This?
+
+I'm documenting this design process because I wish more projects did. Most project documentation shows the final result, not the journey. It hides the mistakes, the dead ends, the moments of confusion.
+
+But the journey is where the learning happens.
+
+If someone else reads this and thinks "I could build that," then this documentation has succeeded. If they read this and think "I would have made different choices," even better—that means they're thinking critically about design tradeoffs.
+
+### The Real Goal
+
+The goal of Aether isn't to build the perfect RF platform. The goal is to learn enough about wireless communication that when I take Signal Processing, Communication Systems, and Wireless Networks courses, I'll have a mental model to hang the theory on.
+
+If Aether helps me understand one concept more deeply, it's a success.
+
+If it helps someone else learn too, even better.
+
+---
+
+## Acknowledgments
+
+This project wouldn't exist without:
+- The YouTube creator whose video sparked the idea
+- The open-source community that documented ESP32 and NRF24
+- The RF24 library maintainers
+- Everyone who shared their RF experiments online
+
+And to future me: I hope this project taught you something useful. If not, at least you learned what doesn't work.
+
+---
+
+*Last Updated: January 2024*  
+*Status: v1.0 in progress*
