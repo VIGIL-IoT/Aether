@@ -46,7 +46,7 @@ Perfect is the enemy of done. Version 1.0 doesn't need to be optimal. It needs t
 
 ### Embrace Iteration
 
-Every mistake is a learning opportunity. Every failed design is data. The goal isn't to avoid failure—it's to fail quickly, learn from it, and improve.
+Every mistake is a learning opportunity. Every failed design is data. The goal isn't to avoid failure - it's to fail quickly, learn from it, and improve.
 
 ---
 
@@ -314,7 +314,7 @@ It's tempting to add every cool feature you can think of. But every feature is a
 
 **Principle:** A tool you can carry is a tool you'll actually use.
 
-Aether should be something I can grab and use anywhere. Portability isn't just convenience—it enables spontaneous experimentation. If I see an interesting RF environment, I want to be able to test it immediately.
+Aether should be something I can grab and use anywhere. Portability isn't just convenience - it enables spontaneous experimentation. If I see an interesting RF environment, I want to be able to test it immediately.
 
 ### 4. Educational Value First
 
@@ -402,7 +402,7 @@ I'm documenting this design process because I wish more projects did. Most proje
 
 But the journey is where the learning happens.
 
-If someone else reads this and thinks "I could build that," then this documentation has succeeded. If they read this and think "I would have made different choices," even better—that means they're thinking critically about design tradeoffs.
+If someone else reads this and thinks "I could build that," then this documentation has succeeded. If they read this and think "I would have made different choices," even better - that means they're thinking critically about design tradeoffs.
 
 ### The Real Goal
 
