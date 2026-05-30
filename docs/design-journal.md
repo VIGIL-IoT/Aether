@@ -426,5 +426,5 @@ And to future me: I hope this project taught you something useful. If not, at le
 
 ---
 
-*Last Updated: January 2024*  
+*Last Updated: May 30, 2026*  
 *Status: v1.0 in progress*
