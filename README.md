@@ -2,7 +2,7 @@
 
 # Aether
 
-![Aether Block Diagram](assets/diagrams/Block%20Diagram%20Aether.png) 
+![Aether Block Diagram](assets/images/Block%20Diagram%20Aether.png) 
 
 **Welcome to Aether**, a compact, open-hardware platform designed to demystify the invisible world of 2.4 GHz wireless communication.
 
