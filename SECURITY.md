@@ -2,6 +2,8 @@
 
 Aether is an educational platform for studying wireless communication systems. This document outlines our responsible disclosure process, ethical use expectations, and legal compliance requirements.
 
+> **Note:** This documentation is original work by Shantanu and is licensed separately from the firmware under CERN-OHL-S v2. The firmware is derived from GPL v3 licensed code.
+
 ---
 
 ## Responsible Disclosure

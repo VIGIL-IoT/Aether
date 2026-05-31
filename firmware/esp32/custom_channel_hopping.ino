@@ -1,3 +1,12 @@
+/**
+ * Based on Ble-jammer by smoochiee
+ * https://github.com/smoochiee/Ble-jammer
+ * Original code licensed under GPL v3
+ * Modified by Shantanu, 2026
+ * Changes: see firmware/CHANGES.md for full changelog
+ */
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "RF24.h"
 /*
 rf24 pin ESP32 pin VSPI

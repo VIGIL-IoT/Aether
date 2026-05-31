@@ -4,6 +4,18 @@ We appreciate your interest in improving Aether. This document outlines our deve
 
 ---
 
+## Licensing
+
+Aether uses dual licensing:
+
+- **Firmware** (`firmware/` directory): GPL v3 or later. All firmware contributions must be compatible with GPL v3 as the firmware is derived from [Ble-jammer](https://github.com/smoochiee/Ble-jammer) by smoochiee.
+- **Hardware** (`hardware/` directory): CERN-OHL-S v2
+- **Documentation** (`docs/`, `experiments/`): CERN-OHL-S v2
+
+By contributing, you agree to license your contributions under the same terms as the directory you're contributing to.
+
+---
+
 ## Commit Style
 
 We follow **Conventional Commits** for clear, structured commit history:

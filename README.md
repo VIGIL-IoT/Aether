@@ -1,8 +1,11 @@
-![License](https://img.shields.io/badge/license-CERN--OHL--S--v2-blue) ![Platform](https://img.shields.io/badge/platform-ESP32-green) ![RF Band](https://img.shields.io/badge/RF-2.4%20GHz-orange) ![Status](https://img.shields.io/badge/status-experimental-yellow)
+![License](https://img.shields.io/badge/license-GPL--v3-blue) ![Platform](https://img.shields.io/badge/platform-ESP32-green) ![RF Band](https://img.shields.io/badge/RF-2.4%20GHz-orange) ![Status](https://img.shields.io/badge/status-experimental-yellow)
 
 # Aether
 
-![Aether Block Diagram](assets/images/Block%20Diagram%20Aether.png) 
+![Aether Block Diagram](assets/images/Block%20Diagram%20Aether.png)
+
+> **Based On:** Firmware derived from [Ble-jammer](https://github.com/smoochiee/Ble-jammer) by smoochiee, licensed under GPL v3.  
+> Hardware design, documentation, and experiments are original work by Shantanu.
 
 **Welcome to Aether**, a compact, open-hardware platform designed to demystify the invisible world of 2.4 GHz wireless communication.
 
@@ -166,16 +169,28 @@ We welcome contributions that improve Aether's educational value, hardware desig
 
 Aether builds upon the work of the open-source community. We gratefully acknowledge the following contributions:
 
-- **ESP32 NRF24L01+ Example Code:** Initial Arduino sketches for dual-radio operation and channel hopping patterns adapted from [smoochiee/Bluetooth-jammer-esp32](https://github.com/smoochiee/Bluetooth-jammer-esp32). These examples provided foundational reference implementations for HSPI/VSPI configuration and frequency hopping algorithms.
+- **Firmware:** All ESP32 firmware code is derived from [Ble-jammer](https://github.com/smoochiee/Ble-jammer) by smoochiee, licensed under GPL v3. The original project provided the foundational implementations for dual-radio operation, HSPI/VSPI configuration, and frequency hopping algorithms. For a detailed changelog of modifications made to the original source, see [firmware/CHANGES.md](firmware/CHANGES.md).
+
+- **Hardware Design, Documentation, and Experiments:** Original work by Shantanu, licensed under CERN-OHL-S v2.
 
 ---
 
 ## License
 
-Aether is licensed under the **CERN Open Hardware Licence Version 2 - Strongly Reciprocal (CERN-OHL-S v2)**. This license ensures that all modifications and derivatives remain open, fostering a collaborative hardware development ecosystem. The full license text is available in [LICENSE](LICENSE).
+Aether uses a dual-licensing approach:
 
-We chose CERN-OHL-S v2 because it:
-- Guarantees freedom to study, modify, and share hardware designs
-- Requires derivatives to remain open (strong reciprocity)
-- Aligns with the open-source hardware community's values
-- Provides clear patent grant and termination clauses
+### Firmware (GPL v3)
+All firmware code in the `firmware/` directory is licensed under the **GNU General Public License v3.0 or later (GPL-3.0-or-later)**. This is a derivative work of [Ble-jammer](https://github.com/smoochiee/Ble-jammer) by smoochiee, which is also licensed under GPL v3. The full license text is available in [LICENSE](LICENSE).
+
+### Hardware (CERN-OHL-S v2)
+All hardware designs, schematics, PCB layouts, and enclosure designs in the `hardware/` directory are licensed under the **CERN Open Hardware Licence Version 2 - Strongly Reciprocal (CERN-OHL-S v2)**. The full license text is available in [LICENSE-HARDWARE](LICENSE-HARDWARE).
+
+### Documentation
+All documentation in the `docs/` directory and experiment designs in the `experiments/` directory are original work and may be used under the same terms as the hardware (CERN-OHL-S v2).
+
+We chose these licenses because they:
+- Respect the original GPL v3 licensing of the firmware source code
+- Guarantee freedom to study, modify, and share designs
+- Require derivatives to remain open (strong reciprocity)
+- Align with the open-source hardware and software community values
+- Provide clear patent grant and termination clauses
