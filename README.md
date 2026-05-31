@@ -2,7 +2,7 @@
 
 # Aether
 
-![Aether Block Diagram](assets/images/Block%20Diagram%20Aether.png)
+![Aether Cover Image](assets/images/Aether%20Cover%20Image.png)
 
 > **Based On:** Firmware derived from [Ble-jammer](https://github.com/smoochiee/Ble-jammer) by smoochiee, licensed under GPL v3.  
 > Hardware design, documentation, and experiments are original work by Shantanu.
