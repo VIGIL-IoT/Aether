@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-bg-primary text-text-primary;
+        font-family: 'Courier New', monospace;
+    }
+}
+
+@layer utilities {
+    .scanline {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .scanline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom,
+                transparent 50%,
+                rgba(0, 212, 255, 0.02) 50%);
+        background-size: 100% 4px;
+        pointer-events: none;
+        z-index: 1;
+    }
+}
