@@ -18,8 +18,7 @@ export const useSimulationEngine = () => {
     updateRadio,
     addPacket,
     incrementOccupancy,
-    addEvent,
-    currentExperiment
+    addEvent
   } = useSimulationStore();
 
   useEffect(() => {
