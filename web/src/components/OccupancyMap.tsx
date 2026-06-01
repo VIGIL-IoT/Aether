@@ -24,7 +24,7 @@ export const OccupancyMap = () => {
         </button>
       </div>
       
-      <div className="grid grid-cols-21 gap-[2px] h-64">
+      <div className="grid gap-[2px] h-64" style={{ gridTemplateColumns: 'repeat(21, 1fr)' }}>
         {channelOccupancy.map((value, channel) => (
           <div
             key={channel}
