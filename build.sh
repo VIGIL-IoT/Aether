@@ -1,6 +1,0 @@
-#!/bin/bash
-set -e
-
-cd web
-npm install
-npm run build
