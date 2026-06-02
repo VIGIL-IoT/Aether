@@ -6,6 +6,10 @@
     body {
         @apply bg-bg-primary text-text-primary;
         font-family: 'Courier New', monospace;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
     }
 }
 
@@ -28,5 +32,13 @@
         background-size: 100% 4px;
         pointer-events: none;
         z-index: 1;
+    }
+
+    .btn-svg {
+        transition: filter 0.45s;
+    }
+
+    a:hover .btn-svg {
+        filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(305deg) brightness(103%) contrast(103%);
     }
 }
