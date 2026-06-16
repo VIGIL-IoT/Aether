@@ -360,3 +360,21 @@ With `dual_radio_hopping.ino` uploaded:
 - Document logic analyzer setup for SPI debugging
 - Create video tutorial for hardware assembly
 - Add automated test suite for firmware validation
+
+## Notes & Learning Resources
+
+### ESP32 Fundamentals
+
+For a comprehensive introduction to the ESP32, including architecture, features, and practical development, refer to:
+
+**[ESP32 Introduction - DroneBot Workshop](https://dronebotworkshop.com/esp32-intro/)**
+
+This article covers:
+- ESP32 pinout and capabilities
+- SPI, I2C, and UART communication
+- PWM and ADC functionality
+- Memory layout and boot process
+- Power management and sleep modes
+- Integration with Arduino IDE
+
+Recommended reading before beginning advanced RF experiments or custom firmware modifications.
