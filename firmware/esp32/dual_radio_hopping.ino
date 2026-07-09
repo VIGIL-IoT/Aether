@@ -20,14 +20,21 @@ ezButton toggleSwitch(SWITCH_PIN);
 SPIClass *sp = nullptr;
 SPIClass *hp = nullptr;
 
-// MODIFIED PINS: CE=14 (was 16), CS=15, SCK=12 (was 14), MISO=2 (was 12), MOSI=13
-RF24 radio(14, 15, 16000000);    // HSPI: CE=14, CS=15
-RF24 radio1(22, 21, 16000000);   // VSPI: CE=22, CS=21 (unchanged)
+RF24 radio(14, 15, 16000000);
+RF24 radio1(22, 21, 16000000);
 
 unsigned int flag = 0;
 unsigned int flagv = 0;
 int ch = 45;
 int ch1 = 45;
+
+// Battery smoothing variables
+#define BATTERY_SAMPLES 10
+float voltageReadings[BATTERY_SAMPLES];
+int readingIndex = 0;
+float smoothedVoltage = 0;
+bool prevUsbState = false;
+unsigned long usbChangeTime = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -37,7 +44,6 @@ void setup() {
   esp_wifi_deinit();
   esp_wifi_disconnect();
   
-  // Initialize OLED first
   Wire.begin(OLED_SDA, OLED_SCL);
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println("OLED failed");
@@ -54,9 +60,11 @@ void setup() {
   pinMode(USB_DETECT_PIN, INPUT);
   toggleSwitch.setDebounceTime(50);
   
-  // Initialize both NRF24
-  initHP();  // Uses pins 14,15,12,2,13
-  initSP();  // Uses pins 22,21,18,19,23
+  // Initialize battery readings array
+  for(int i=0; i<BATTERY_SAMPLES; i++) voltageReadings[i] = 3.7;
+  
+  initHP();
+  initSP();
   
   delay(500);
   display.clearDisplay();
@@ -70,9 +78,13 @@ void initSP() {
     radio1.setAutoAck(false);
     radio1.stopListening();
     radio1.setRetries(0, 0);
+    // MAX POWER: RF24_PA_MAX with LNA enabled (second parameter true)
     radio1.setPALevel(RF24_PA_MAX, true);
     radio1.setDataRate(RF24_2MBPS);
     radio1.setCRCLength(RF24_CRC_DISABLED);
+    // Additional power optimization: disable dynamic payload and features
+    radio1.setPayloadSize(5);
+    radio1.setAddressWidth(3);
     radio1.startConstCarrier(RF24_PA_MAX, ch1);
     display.println("SP:OK");
     display.display();
@@ -85,7 +97,6 @@ void initSP() {
 
 void initHP() {
   hp = new SPIClass(HSPI);
-  // MODIFIED HSPI: SCK=12, MISO=2, MOSI=13, CS=15
   hp->begin(12, 2, 13, 15);
   
   if (radio.begin(hp)) {
@@ -93,9 +104,13 @@ void initHP() {
     radio.setAutoAck(false);
     radio.stopListening();
     radio.setRetries(0, 0);
+    // MAX POWER: RF24_PA_MAX with LNA enabled
     radio.setPALevel(RF24_PA_MAX, true);
     radio.setDataRate(RF24_2MBPS);
     radio.setCRCLength(RF24_CRC_DISABLED);
+    // Additional power optimization
+    radio.setPayloadSize(5);
+    radio.setAddressWidth(3);
     radio.startConstCarrier(RF24_PA_MAX, ch);
     display.println("HP:OK");
     display.display();
@@ -128,39 +143,92 @@ void randomMode() {
   delayMicroseconds(random(60));
 }
 
+void readBatteryAndUSB() {
+  // Read ADC with averaging
+  long sum = 0;
+  for(int i=0; i<5; i++) {
+    sum += analogRead(BATTERY_PIN);
+    delayMicroseconds(100);
+  }
+  float rawADC = sum / 5.0;
+  
+  // Calculate voltage (100k+100k divider = factor of 2)
+  float instantVoltage = (rawADC / 4095.0) * 3.3 * 2.0;
+  
+  // Smoothing filter (moving average)
+  voltageReadings[readingIndex] = instantVoltage;
+  readingIndex = (readingIndex + 1) % BATTERY_SAMPLES;
+  
+  float total = 0;
+  for(int i=0; i<BATTERY_SAMPLES; i++) total += voltageReadings[i];
+  smoothedVoltage = total / BATTERY_SAMPLES;
+  
+  // USB detection with debouncing
+  bool currentUsb = digitalRead(USB_DETECT_PIN) == HIGH;
+  if (currentUsb != prevUsbState) {
+    if (millis() - usbChangeTime > 100) { // 100ms debounce
+      prevUsbState = currentUsb;
+    }
+  } else {
+    usbChangeTime = millis();
+  }
+}
+
 void updateDisplay(const char* mode) {
   static unsigned long lastUpdate = 0;
   if (millis() - lastUpdate < 200) return;
   lastUpdate = millis();
   
-  int rawADC = analogRead(BATTERY_PIN);
-  float voltage = (rawADC / 4095.0) * 3.3 * 2.0;
-  int percentage = (int)((voltage - 3.0) / 1.2 * 100);
+  readBatteryAndUSB();
+  
+  // Calculate percentage based on LiPo curve (3.0V = 0%, 4.2V = 100%)
+  int percentage = (int)((smoothedVoltage - 3.0) / 1.2 * 100);
   if (percentage > 100) percentage = 100;
   if (percentage < 0) percentage = 0;
-  bool usb = digitalRead(USB_DETECT_PIN) == HIGH;
   
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
   
-  // Top line: Mode and Power
+  // Top line: Mode and Power Status
   display.setCursor(0,0);
   display.print(mode);
-  if (usb) display.print(" [USB]");
-  else { display.print(" [B]"); display.print(percentage); display.print("%"); }
   
-  // Channel values - these should change for jamming to work
+  if (prevUsbState) {
+    display.print(" [USB");
+    // If voltage is high, show charging indicator
+    if (smoothedVoltage > 4.0) display.print("+");
+    display.print("]");
+  } else {
+    display.print(" [B");
+    display.print(percentage);
+    display.print("%]");
+  }
+  
+  // Battery bar when on battery
+  if (!prevUsbState) {
+    int barWidth = map(percentage, 0, 100, 0, 40);
+    display.drawRect(84, 0, 44, 8, SSD1306_WHITE);
+    if (barWidth > 0) display.fillRect(86, 2, barWidth, 4, SSD1306_WHITE);
+  }
+  
+  // Channel values
   display.setTextSize(2);
   display.setCursor(0,16);
   display.print("H:"); display.println(ch);
   display.setCursor(0,36);
   display.print("S:"); display.println(ch1);
   
-  // Voltage
+  // Voltage with 2 decimal precision
   display.setTextSize(1);
   display.setCursor(0,56);
-  display.print(voltage, 1); display.print("V");
+  display.print(smoothedVoltage, 2); 
+  display.print("V");
+  
+  // Show power indicator
+  display.setCursor(100,56);
+  display.print("MAX");
+  
   display.display();
 }
 
