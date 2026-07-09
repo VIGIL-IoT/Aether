@@ -1,158 +1,195 @@
-/**
- * Based on Ble-jammer by smoochiee
- * https://github.com/smoochiee/Ble-jammer
- * Original code licensed under GPL v3
- * Modified by Shantanu, 2026
- * Changes: see firmware/CHANGES.md for full changelog
- */
-// SPDX-License-Identifier: GPL-3.0-or-later
-
 #include "RF24.h"
 #include <SPI.h>
 #include <ezButton.h>
 #include "esp_bt.h"
 #include "esp_wifi.h"
+#include <Wire.h>
+#include <Adafruit_SSD1306.h>
 
+// OLED Configuration
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_SDA 32
+#define OLED_SCL 35
+#define OLED_RESET -1
 
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+// SPI Instances
 SPIClass *sp = nullptr;
 SPIClass *hp = nullptr;
 
-RF24 radio(16, 15, 16000000);   //HSPI CAN SET SPI SPEED TO 16000000 BY DEFAULT ITS 10000000
-RF24 radio1(22, 21, 16000000);  //VSPI CAN SET SPI SPEED TO 16000000 BY DEFAULT ITS 10000000
+// MODIFIED HSPI PINS (as per your changes)
+// Original: CE=16, SCK=14, MISO=12, MOSI=13, CS=15
+// New: CE=14, SCK=12, MISO=2, MOSI=13, CS=15
+#define HSPI_CE 14
+#define HSPI_CS 15
+#define HSPI_SCK 12
+#define HSPI_MISO 2
+#define HSPI_MOSI 13
 
+// VSPI PINS (unchanged)
+// CE = 22, CS = 21, SCK = 18, MISO = 19, MOSI = 23
+#define VSPI_CE 22
+#define VSPI_CS 21
 
-//HSPI=SCK = 14, MISO = 12, MOSI = 13, CS = 15 , CE = 16
-//VSPI=SCK = 18, MISO =19, MOSI = 23 ,CS =21 ,CE = 22
+RF24 radio(HSPI_CE, HSPI_CS, 16000000);    // HSPI with modified pins
+RF24 radio1(VSPI_CE, VSPI_CS, 16000000);   // VSPI standard pins
 
-unsigned int flag = 0;   //HSPI// Flag variable to keep track of direction
-unsigned int flagv = 0;  //VSPI// Flag variable to keep track of direction
-int ch = 45;    // Variable to store value of ch
-int ch1 = 45;   // Variable to store value of ch
+// Channel variables
+unsigned int flag = 0;    // HSPI flag
+unsigned int flagv = 0;   // VSPI flag
+int ch = 45;              // HSPI channel
+int ch1 = 45;             // VSPI channel
 
+// Toggle switch
 ezButton toggleSwitch(33);
 
-
-
-
-void two() {
-  if (flagv == 0) {  // If flag is 0, increment ch by 4 and ch1 by 1
-
-    ch1 += 4;
-  } else {  // If flag is not 0, decrement ch by 4 and ch1 by 1
-
-    ch1 -= 4;
-  }
-
-  if (flag == 0) {  // If flag is 0, increment ch by 4 and ch1 by 1
-    ch += 2;
-
-  } else {  // If flag is not 0, decrement ch by 4 and ch1 by 1
-    ch -= 2;
-  }
-
-  // Check if ch1 is greater than 79 and flag is 0
-  if ((ch1 > 79) && (flagv == 0)) {
-    flagv = 1;                             // Set flag to 1 to change direction
-  } else if ((ch1 < 2) && (flagv == 1)) {  // Check if ch1 is less than 2 and flag is 1
-    flagv = 0;                             // Set flag to 0 to change direction
-  }
-
-  // Check if ch is greater than 79 and flag is 0
-  if ((ch > 79) && (flag == 0)) {
-    flag = 1;                            // Set flag to 1 to change direction
-  } else if ((ch < 2) && (flag == 1)) {  // Check if ch is less than 2 and flag is 1
-    flag = 0;                            // Set flag to 0 to change direction
-  }
-  radio.setChannel(ch);
-  radio1.setChannel(ch1);
-  /*Serial.print("SP:");
-  Serial.println(ch1);
-  Serial.print("\tHP:");
-  Serial.println(ch);*/
-}
-
-
-void one() {
-  ////RANDOM CHANNEL
-  radio1.setChannel(random(80));
-  radio.setChannel(random(80));
-  delayMicroseconds(random(60));//////REMOVE IF SLOW
-
-
- /*  YOU CAN DO -----SWEEP CHANNEL
-  for (int i = 0; i < 79; i++) {
-    radio.setChannel(i);
-*/
-
-}
-
-
-
 void setup() {
-
   Serial.begin(115200);
+  
+  // Disable ESP32 internal Bluetooth and WiFi to reduce interference
   esp_bt_controller_deinit();
   esp_wifi_stop();
   esp_wifi_deinit();
   esp_wifi_disconnect();
+  
+  // Initialize toggle switch
   toggleSwitch.setDebounceTime(50);
-
-  initHP();
-  initSP();
+  
+  // Initialize OLED
+  Wire.begin(OLED_SDA, OLED_SCL);
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println(F("SSD1306 allocation failed"));
+  }
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println("BLE Jammer Init...");
+  display.display();
+  
+  // Initialize both NRF24 modules
+  initHP();  // HSPI - Modified pins
+  initSP();  // VSPI - Standard pins
+  
+  delay(1000);
 }
 
 void initSP() {
   sp = new SPIClass(VSPI);
   sp->begin();
+  
   if (radio1.begin(sp)) {
-    Serial.println("SP Started !!!");
+    Serial.println("VSPI Started !!!");
     radio1.setAutoAck(false);
     radio1.stopListening();
     radio1.setRetries(0, 0);
     radio1.setPALevel(RF24_PA_MAX, true);
     radio1.setDataRate(RF24_2MBPS);
     radio1.setCRCLength(RF24_CRC_DISABLED);
-    radio1.printPrettyDetails();
     radio1.startConstCarrier(RF24_PA_MAX, ch1);
+    
+    display.println("VSPI: OK");
+    display.display();
   } else {
-    Serial.println("SP couldn't start !!!");
+    Serial.println("VSPI couldn't start !!!");
+    display.println("VSPI: FAIL");
+    display.display();
   }
 }
+
 void initHP() {
   hp = new SPIClass(HSPI);
-  hp->begin();
+  
+  // Configure HSPI with modified pins
+  // SCK=12, MISO=2, MOSI=13, CS=15
+  hp->begin(HSPI_SCK, HSPI_MISO, HSPI_MOSI, HSPI_CS);
+  
   if (radio.begin(hp)) {
-    Serial.println("HP Started !!!");
+    Serial.println("HSPI Started !!!");
     radio.setAutoAck(false);
     radio.stopListening();
     radio.setRetries(0, 0);
     radio.setPALevel(RF24_PA_MAX, true);
     radio.setDataRate(RF24_2MBPS);
     radio.setCRCLength(RF24_CRC_DISABLED);
-    radio.printPrettyDetails();
     radio.startConstCarrier(RF24_PA_MAX, ch);
+    
+    display.println("HSPI: OK");
+    display.display();
   } else {
-    Serial.println("HP couldn't start !!!");
+    Serial.println("HSPI couldn't start !!!");
+    display.println("HSPI: FAIL");
+    display.display();
   }
 }
 
+// Mode 2: Sweeping channel hop
+void two() {
+  // VSPI channel hopping
+  if (flagv == 0) {
+    ch1 += 4;
+  } else {
+    ch1 -= 4;
+  }
+
+  // HSPI channel hopping  
+  if (flag == 0) {
+    ch += 2;
+  } else {
+    ch -= 2;
+  }
+
+  // VSPI direction change
+  if ((ch1 > 79) && (flagv == 0)) {
+    flagv = 1;
+  } else if ((ch1 < 2) && (flagv == 1)) {
+    flagv = 0;
+  }
+
+  // HSPI direction change
+  if ((ch > 79) && (flag == 0)) {
+    flag = 1;
+  } else if ((ch < 2) && (flag == 1)) {
+    flag = 0;
+  }
+  
+  radio.setChannel(ch);
+  radio1.setChannel(ch1);
+  
+  // Update OLED
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.println("MODE: SWEEP");
+  display.print("HP:"); display.println(ch);
+  display.print("SP:"); display.println(ch1);
+  display.display();
+}
+
+// Mode 1: Random channel hop
+void one() {
+  radio1.setChannel(random(80));
+  radio.setChannel(random(80));
+  delayMicroseconds(random(60));
+  
+  // Update OLED
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.println("MODE: RANDOM");
+  display.print("HP:"); display.println(ch);
+  display.print("SP:"); display.println(ch1);
+  display.display();
+}
+
 void loop() {
-
-
-  toggleSwitch.loop();  // MUST call the loop() function first
-
-  /* if (toggleSwitch.isPressed())
-    Serial.println("one");
-  if (toggleSwitch.isReleased())
-    Serial.println("two");*/
-
+  toggleSwitch.loop();
   int state = toggleSwitch.getState();
-
 
   if (state == HIGH)
     two();
-
-  else {
+  else
     one();
-  }
+    
+  delay(1); // Small delay for stability
 }
