@@ -1,149 +1,85 @@
-import { create } from 'zustand';
+import { useSyncExternalStore } from 'react';
+import { createInitialModel, stepModel, type HopMode } from '../domain/rfModel.mjs';
 
-export type RadioState = 'TX' | 'RX' | 'HOPPING' | 'IDLE';
-export type HopMode = 'SEQUENTIAL' | 'RANDOM' | 'COORDINATED';
-export type ExperimentType = 'CHANNEL_HOPPING' | 'WIFI_COEX' | 'BLE_COEX' | 'DISTANCE_RSSI' | 'BODY_ATTENUATION' | 'INTERFERENCE_MAP' | 'MESH_SYNC';
-
-export interface Radio {
-  id: 1 | 2;
-  bus: 'HSPI' | 'VSPI';
-  channel: number;
-  state: RadioState;
-  packetCount: number;
-  successRate: number;
-  rssi: number;
-}
-
-export interface Packet {
-  id: string;
-  radioId: 1 | 2;
-  channel: number;
-  timestamp: number;
-  status: 'success' | 'retry' | 'collision';
-}
+export type { HopMode } from '../domain/rfModel.mjs';
+export type Radio = ReturnType<typeof createInitialModel>['radio1'];
 
 export interface SimulationState {
   isRunning: boolean;
   isPaused: boolean;
-  uptime: number;
-  fps: number;
-  
+  elapsedMs: number;
+  seed: number;
+  hopMode: HopMode;
+  hopRateMs: number;
+  channelRange: [number, number];
   radio1: Radio;
   radio2: Radio;
-  
-  hopMode: HopMode;
-  hopRate: number;
-  channelRange: [number, number];
-  
-  packets: Packet[];
-  channelOccupancy: number[];
-  
-  currentExperiment: ExperimentType;
-  
-  wifiChannels: number[];
-  bleChannels: number[];
-  
-  nodeDistance: number;
-  bodyAttenuation: number;
-  
-  eventLog: string[];
-  
+  visits1: number[];
+  visits2: number[];
+  steps: number;
   start: () => void;
   stop: () => void;
   pause: () => void;
   reset: () => void;
-  setExperiment: (exp: ExperimentType) => void;
   setHopMode: (mode: HopMode) => void;
   setHopRate: (rate: number) => void;
-  updateRadio: (radioId: 1 | 2, updates: Partial<Radio>) => void;
-  addPacket: (packet: Packet) => void;
-  incrementOccupancy: (channel: number) => void;
-  resetOccupancy: () => void;
-  addEvent: (event: string) => void;
-  tick: () => void;
+  step: () => void;
 }
 
-export const useSimulationStore = create<SimulationState>((set, get) => ({
+type StorePatch = Partial<SimulationState>;
+type StoreHook = {
+  <T>(selector: (state: SimulationState) => T): T;
+  getState: () => SimulationState;
+};
+
+const listeners = new Set<() => void>();
+let state: SimulationState;
+
+const setState = (patch: StorePatch | ((current: SimulationState) => StorePatch)) => {
+  const update = typeof patch === 'function' ? patch(state) : patch;
+  if (Object.keys(update).length === 0) return;
+  state = { ...state, ...update };
+  listeners.forEach((listener) => listener());
+};
+
+const subscribe = (listener: () => void) => {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+};
+
+const selectSnapshot = <T,>(selector: (current: SimulationState) => T) => selector(state);
+
+const useStore = <T,>(selector: (current: SimulationState) => T) =>
+  useSyncExternalStore(subscribe, () => selectSnapshot(selector), () => selectSnapshot(selector));
+
+state = {
+  ...createInitialModel(),
   isRunning: false,
   isPaused: false,
-  uptime: 0,
-  fps: 60,
-  
-  radio1: {
-    id: 1,
-    bus: 'HSPI',
-    channel: 2,
-    state: 'IDLE',
-    packetCount: 0,
-    successRate: 100,
-    rssi: -45,
+  start: () => setState({ isRunning: true, isPaused: false }),
+  stop: () => setState({ isRunning: false, isPaused: false }),
+  pause: () => setState({ isPaused: true }),
+  reset: () => {
+    const { hopMode, hopRateMs } = state;
+    setState({ ...createInitialModel(), hopMode, hopRateMs, isRunning: false, isPaused: false });
   },
-  
-  radio2: {
-    id: 2,
-    bus: 'VSPI',
-    channel: 40,
-    state: 'IDLE',
-    packetCount: 0,
-    successRate: 100,
-    rssi: -48,
-  },
-  
-  hopMode: 'SEQUENTIAL',
-  hopRate: 100,
-  channelRange: [0, 125],
-  
-  packets: [],
-  channelOccupancy: new Array(126).fill(0),
-  
-  currentExperiment: 'CHANNEL_HOPPING',
-  
-  wifiChannels: [1, 6, 11],
-  bleChannels: [0, 12, 39],
-  
-  nodeDistance: 5,
-  bodyAttenuation: 0,
-  
-  eventLog: [],
-  
-  start: () => set({ isRunning: true, isPaused: false }),
-  stop: () => set({ isRunning: false }),
-  pause: () => set({ isPaused: true }),
-  
-  reset: () => set({
-    isRunning: false,
-    isPaused: false,
-    uptime: 0,
-    packets: [],
-    channelOccupancy: new Array(126).fill(0),
-    eventLog: [],
-    radio1: { ...get().radio1, packetCount: 0, successRate: 100, state: 'IDLE' },
-    radio2: { ...get().radio2, packetCount: 0, successRate: 100, state: 'IDLE' },
+  setHopMode: (hopMode) => setState({ hopMode }),
+  setHopRate: (hopRateMs) => setState({ hopRateMs }),
+  step: () => setState((current) => {
+    if (!current.isRunning || current.isPaused) return {};
+    const next = stepModel(current);
+    return {
+      elapsedMs: next.elapsedMs,
+      seed: next.seed,
+      radio1: next.radio1,
+      radio2: next.radio2,
+      visits1: next.visits1,
+      visits2: next.visits2,
+      steps: next.steps,
+    };
   }),
-  
-  setExperiment: (exp) => set({ currentExperiment: exp }),
-  setHopMode: (mode) => set({ hopMode: mode }),
-  setHopRate: (rate) => set({ hopRate: rate }),
-  
-  updateRadio: (radioId, updates) => set((state) => ({
-    [`radio${radioId}`]: { ...state[`radio${radioId}` as 'radio1' | 'radio2'], ...updates }
-  })),
-  
-  addPacket: (packet) => set((state) => ({
-    packets: [...state.packets.slice(-50), packet]
-  })),
-  
-  incrementOccupancy: (channel) => set((state) => {
-    const newOccupancy = [...state.channelOccupancy];
-    newOccupancy[channel] = Math.min(newOccupancy[channel] + 1, 100);
-    return { channelOccupancy: newOccupancy };
-  }),
-  
-  resetOccupancy: () => set({ channelOccupancy: new Array(126).fill(0) }),
-  
-  addEvent: (event) => set((state) => ({
-    eventLog: [...state.eventLog.slice(-20), `[${state.uptime.toFixed(1)}s] ${event}`]
-  })),
-  
-  tick: () => set((state) => ({ uptime: state.uptime + 0.016 })),
-}));
+};
+
+export const useSimulationStore: StoreHook = Object.assign(useStore, {
+  getState: () => state,
+});

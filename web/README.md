@@ -1,65 +1,30 @@
-# Aether RF Simulator
+# Aether RF channel model
 
-Professional interactive digital twin of the Aether educational RF research platform.
+The web app is a deterministic teaching model for the channel-selection logic of two nRF24 radios. It shows each radio's RF_CH position, maps the 126 channel centres from 2400 to 2525 MHz, and records modelled channel selections over a session.
 
-## Features
+It does not transmit RF, measure signal power, generate Wi-Fi or BLE traffic, simulate packets, or report RSSI, battery voltage, or temperature. Wi-Fi and BLE marks are frequency references only.
 
-- **Device Simulation**: ESP32 + Dual NRF24L01+ radios with independent HSPI/VSPI buses
-- **RF Spectrum Visualization**: Real-time 2.4GHz spectrum with WiFi/BLE overlays
-- **Channel Occupancy Heatmap**: Live visualization of frequency hopping patterns
-- **Network View**: Future mesh protocol visualization
-- **Telemetry Dashboard**: Real-time metrics and event logging
-- **Experiment Control**: Multiple preset experiments with configurable parameters
+## Run locally
 
-## Tech Stack
-
-- React 18
-- TypeScript
-- TailwindCSS
-- Framer Motion
-- Recharts
-- Zustand
-
-## Getting Started
-
-```bash
-# Install dependencies
+```sh
 npm install
-
-# Start development server
 npm run dev
+```
 
-# Build for production
+Run the model tests and production build with:
+
+```sh
+npm test
 npm run build
 ```
 
-## Experiments
+The app uses React 18, TypeScript, and Vite. It requires Node.js 18 or newer.
 
-1. **Channel Hopping**: Sequential, random, and coordinated hopping modes
-2. **WiFi Coexistence**: Visualize interference with WiFi channels
-3. **BLE Coexistence**: Bluetooth Low Energy interference patterns
-4. **Distance vs RSSI**: Signal strength analysis
-5. **Body Attenuation**: Human body RF blocking effects
-6. **Interference Mapping**: Comprehensive RF environment analysis
-7. **Mesh Synchronization**: Future mesh protocol testing
+## Model controls
 
-## Architecture
+- **Sequential:** both radios advance one channel per step and wrap at RF_CH 125.
+- **Seeded random:** a fixed seed produces repeatable channel selections.
+- **Fixed separation:** Radio 2 follows Radio 1 at a 32-channel offset.
+- **Hop interval:** advances simulated time and sets the delay between model steps.
 
-The simulator uses a centralized state management system (Zustand) with a unified simulation engine. All panels subscribe to the same state, ensuring synchronized updates across:
-
-- Device view
-- Spectrum analyzer
-- Occupancy heatmap
-- Network topology
-- Telemetry data
-
-## Design Philosophy
-
-Mission control aesthetic inspired by:
-- Wireshark
-- GNU Radio
-- SDR++
-- HackRF tools
-- Aerospace telemetry systems
-
-Dark engineering theme with technical precision and real-time data visualization.
+The frequency mapping follows `f (MHz) = 2400 + RF_CH`. The plot marks Wi-Fi 2.4 GHz channels 1, 6, and 11, and Bluetooth LE advertising channel centres 37, 38, and 39.

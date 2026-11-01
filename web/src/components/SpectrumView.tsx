@@ -1,146 +1,121 @@
-import { motion } from 'framer-motion';
+import { channelFrequencyMHz } from '../domain/rfModel.mjs';
 import { useSimulationStore } from '../store/simulationStore';
 
-const FREQ_MIN = 2400;
-const FREQ_MAX = 2483.5;
-const CHANNEL_WIDTH = 1;
+const PLOT_LEFT = 146;
+const PLOT_RIGHT = 1030;
+const PLOT_WIDTH = PLOT_RIGHT - PLOT_LEFT;
+const CHANNEL_MAX = 125;
+
+const xForChannel = (channel: number) => PLOT_LEFT + (channel / CHANNEL_MAX) * PLOT_WIDTH;
+
+const majorTicks = [0, 25, 50, 75, 100, 125];
+const wifiChannels = [
+  { label: '1', rfCh: 12 },
+  { label: '6', rfCh: 37 },
+  { label: '11', rfCh: 62 },
+];
+const bleAdvertisingChannels = [2, 26, 80];
 
 export const SpectrumView = () => {
-  const { radio1, radio2, wifiChannels, bleChannels } = useSimulationStore();
-
-  const channelToFreq = (ch: number) => FREQ_MIN + ch * CHANNEL_WIDTH;
-
-  const getXPosition = (freq: number) => {
-    return ((freq - FREQ_MIN) / (FREQ_MAX - FREQ_MIN)) * 100;
-  };
+  const radio1 = useSimulationStore((state) => state.radio1);
+  const radio2 = useSimulationStore((state) => state.radio2);
+  const isRunning = useSimulationStore((state) => state.isRunning);
+  const isPaused = useSimulationStore((state) => state.isPaused);
+  const bandEdge = xForChannel(83.5);
 
   return (
-    <div className="bg-bg-panel border border-bg-border rounded-lg p-6 scanline">
-      <h2 className="text-sm font-bold text-accent-primary mb-4 tracking-wider">RF SPECTRUM</h2>
-      
-      <div className="relative h-80 bg-bg-primary rounded border border-bg-border p-4">
-        {/* Frequency Scale */}
-        <div className="absolute top-2 left-0 right-0 flex justify-between text-[8px] text-text-secondary px-4">
-          <span>2400 MHz</span>
-          <span>2441 MHz</span>
-          <span>2483.5 MHz</span>
+    <section className="panel spectrum-panel" aria-labelledby="spectrum-title">
+      <div className="panel-heading">
+        <div>
+          <h2 id="spectrum-title">Where each radio is tuned</h2>
         </div>
+        <span className={`run-state ${isRunning && !isPaused ? 'is-running' : ''}`}>
+          <span className="state-dot" aria-hidden="true" />
+          {isRunning ? (isPaused ? 'Paused' : 'Running') : 'Ready'}
+        </span>
+      </div>
 
-        {/* Noise Floor */}
-        <svg className="absolute inset-0 w-full h-full">
-          <defs>
-            <linearGradient id="noiseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#00D4FF" stopOpacity="0.1" />
-              <stop offset="100%" stopColor="#00D4FF" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          
-          {/* Noise floor visualization */}
-          {Array.from({ length: 100 }).map((_, i) => (
-            <motion.rect
-              key={i}
-              x={`${i}%`}
-              y="60%"
-              width="1%"
-              height={`${Math.random() * 10 + 5}%`}
-              fill="url(#noiseGradient)"
-              animate={{ height: `${Math.random() * 10 + 5}%` }}
-              transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse' }}
+      <p className="chart-scroll-hint">Swipe horizontally to inspect all 126 RF_CH values.</p>
+      <div className="chart-scroll" tabIndex={0} aria-label="Scrollable frequency chart">
+        <svg
+          className="spectrum-chart"
+          viewBox="0 0 1080 356"
+          role="img"
+          aria-labelledby="spectrum-svg-title spectrum-svg-desc"
+        >
+          <title id="spectrum-svg-title">Current nRF24 channel positions</title>
+          <desc id="spectrum-svg-desc">
+            Radio one is on RF channel {radio1.channel} at {channelFrequencyMHz(radio1.channel)} megahertz.
+            Radio two is on RF channel {radio2.channel} at {channelFrequencyMHz(radio2.channel)} megahertz.
+            The chart spans 2400 to 2525 megahertz and does not show measured signal power.
+          </desc>
+
+          <rect x={PLOT_LEFT} y="66" width={bandEdge - PLOT_LEFT} height="207" className="band-region" />
+          <text x={PLOT_LEFT + 12} y="52" className="region-label">2400–2483.5 MHz reference range · regional rules vary</text>
+          <line x1={bandEdge} y1="61" x2={bandEdge} y2="274" className="band-edge" />
+          <text x={bandEdge + 7} y="76" className="edge-label">2483.5</text>
+
+          {Array.from({ length: 26 }, (_, index) => index * 5).map((channel) => (
+            <line
+              key={`minor-${channel}`}
+              x1={xForChannel(channel)}
+              y1="267"
+              x2={xForChannel(channel)}
+              y2={channel % 25 === 0 ? '281' : '274'}
+              className={channel % 25 === 0 ? 'major-tick' : 'minor-tick'}
             />
           ))}
+          <line x1={PLOT_LEFT} y1="267" x2={PLOT_RIGHT} y2="267" className="frequency-axis" />
+
+          <text x="18" y="135" className="lane-name radio-one-label">RADIO 1</text>
+          <text x="18" y="153" className="lane-detail">HSPI · RF_CH</text>
+          <text x="18" y="210" className="lane-name radio-two-label">RADIO 2</text>
+          <text x="18" y="228" className="lane-detail">VSPI · RF_CH</text>
+          <line x1={PLOT_LEFT} y1="139" x2={PLOT_RIGHT} y2="139" className="radio-lane" />
+          <line x1={PLOT_LEFT} y1="214" x2={PLOT_RIGHT} y2="214" className="radio-lane" />
+
+          {majorTicks.map((channel) => (
+            <g key={`tick-${channel}`}>
+              <text x={xForChannel(channel)} y="301" textAnchor="middle" className="tick-channel">CH {channel}</text>
+              <text x={xForChannel(channel)} y="322" textAnchor="middle" className="tick-frequency">{channelFrequencyMHz(channel)} MHz</text>
+            </g>
+          ))}
+
+          {wifiChannels.map(({ label, rfCh }) => (
+            <g key={`wifi-${label}`}>
+              <line x1={xForChannel(rfCh)} y1="242" x2={xForChannel(rfCh)} y2="258" className="wifi-marker" />
+              <circle cx={xForChannel(rfCh)} cy="242" r="3.2" className="wifi-dot" />
+              <text x={xForChannel(rfCh)} y="235" textAnchor="middle" className="reference-label">Wi-Fi {label}</text>
+            </g>
+          ))}
+
+          {bleAdvertisingChannels.map((channel) => (
+            <path
+              key={`ble-${channel}`}
+              d={`M ${xForChannel(channel)} 253 l 4 7 h -8 z`}
+              className="ble-marker"
+            />
+          ))}
+
+          <g className="radio-marker radio-one-marker" transform={`translate(${xForChannel(radio1.channel)} 139)`}>
+            <line y1="-29" y2="31" className="marker-line" />
+            <circle r="7" className="marker-shape" />
+            <text x="0" y="-38" textAnchor="middle" className="marker-value">CH {radio1.channel}</text>
+          </g>
+          <g className="radio-marker radio-two-marker" transform={`translate(${xForChannel(radio2.channel)} 214)`}>
+            <line y1="-29" y2="28" className="marker-line" />
+            <rect x="-6" y="-6" width="12" height="12" className="marker-shape" />
+            <text x="0" y="-38" textAnchor="middle" className="marker-value">CH {radio2.channel}</text>
+          </g>
         </svg>
-
-        {/* WiFi Channels */}
-        {wifiChannels.map((ch) => {
-          const freq = 2412 + (ch - 1) * 5;
-          const x = getXPosition(freq);
-          return (
-            <div
-              key={`wifi-${ch}`}
-              className="absolute top-16 h-32 w-8 border-l border-r border-dashed border-accent-warning opacity-30"
-              style={{ left: `${x}%` }}
-            >
-              <div className="text-[8px] text-accent-warning -rotate-90 origin-left mt-2">
-                WiFi {ch}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* BLE Channels */}
-        {bleChannels.map((ch) => {
-          const freq = 2402 + ch * 2;
-          const x = getXPosition(freq);
-          return (
-            <div
-              key={`ble-${ch}`}
-              className="absolute top-16 h-32 w-1 bg-accent-secondary opacity-20"
-              style={{ left: `${x}%` }}
-            />
-          );
-        })}
-
-        {/* Radio 1 Marker */}
-        <motion.div
-          className="absolute top-12 w-2 h-48 bg-accent-primary"
-          style={{ left: `${getXPosition(channelToFreq(radio1.channel))}%` }}
-          animate={{
-            boxShadow: '0 0 20px rgba(0, 212, 255, 0.8)',
-            height: radio1.state === 'TX' ? '60%' : '40%'
-          }}
-          transition={{ duration: 0.2 }}
-        >
-          <div className="absolute -top-6 -left-8 text-[10px] text-accent-primary whitespace-nowrap">
-            R1: {channelToFreq(radio1.channel).toFixed(1)} MHz
-          </div>
-        </motion.div>
-
-        {/* Radio 2 Marker */}
-        <motion.div
-          className="absolute top-12 w-2 h-48 bg-accent-secondary"
-          style={{ left: `${getXPosition(channelToFreq(radio2.channel))}%` }}
-          animate={{
-            boxShadow: '0 0 20px rgba(0, 255, 157, 0.8)',
-            height: radio2.state === 'TX' ? '60%' : '40%'
-          }}
-          transition={{ duration: 0.2 }}
-        >
-          <div className="absolute -bottom-6 -left-8 text-[10px] text-accent-secondary whitespace-nowrap">
-            R2: {channelToFreq(radio2.channel).toFixed(1)} MHz
-          </div>
-        </motion.div>
-
-        {/* Grid Lines */}
-        <div className="absolute inset-0 pointer-events-none">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-full border-t border-bg-border opacity-20"
-              style={{ top: `${i * 10}%` }}
-            />
-          ))}
-        </div>
       </div>
-
-      {/* Legend */}
-      <div className="mt-4 flex gap-6 text-[10px]">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-accent-primary"></div>
-          <span className="text-text-secondary">Radio 1 (HSPI)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-accent-secondary"></div>
-          <span className="text-text-secondary">Radio 2 (VSPI)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 border border-accent-warning"></div>
-          <span className="text-text-secondary">WiFi</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-1 bg-accent-secondary opacity-50"></div>
-          <span className="text-text-secondary">BLE</span>
-        </div>
+      <div className="chart-legend" aria-label="Chart legend">
+        <span><i className="legend-radio-one" aria-hidden="true" />Radio 1</span>
+        <span><i className="legend-radio-two" aria-hidden="true" />Radio 2</span>
+        <span><i className="legend-wifi" aria-hidden="true" />Wi-Fi channel centres</span>
+        <span><i className="legend-ble" aria-hidden="true" />BLE advertising centres (37, 38, 39)</span>
       </div>
-    </div>
+      <p className="chart-note">Position only. The plot does not model occupied bandwidth, signal strength, interference, or packet delivery.</p>
+    </section>
   );
 };
