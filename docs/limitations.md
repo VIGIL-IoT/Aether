@@ -9,6 +9,7 @@ This page records what the current repository does not establish.
 - The displayed frequencies and visit counts are model outputs, not measurements.
 - Browser timer scheduling is not a real-time guarantee.
 - Automated tests cover the pure model; UI behavior has not been covered by browser automation.
+- The repository has no ESLint configuration or dependency and no checked-in npm lockfile.
 
 ## Hardware
 

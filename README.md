@@ -35,7 +35,6 @@ The model checks and production build are:
 
     npm test
     npm run build
-    npm run lint
 
 See [web/README.md](web/README.md) for controls and [docs/setup-guide.md](docs/setup-guide.md) for setup details.
 
@@ -62,6 +61,7 @@ The browser simulator is software-only. The legacy firmware is a separate, unval
 - [KiCad carrier R1](hardware/kicad/aether-carrier-r1/README.md)
 - [Experiments: proposals and status](experiments/README.md)
 - [Security policy](SECURITY.md)
+- [Web verification workflow](.github/workflows/verify-web.yml)
 
 ## Repository layout
 

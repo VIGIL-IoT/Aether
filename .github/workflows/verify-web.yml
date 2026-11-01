@@ -1,0 +1,36 @@
+name: Verify web simulator
+
+on:
+  push:
+    paths:
+      - "web/**"
+      - ".github/workflows/verify-web.yml"
+  pull_request:
+    paths:
+      - "web/**"
+      - ".github/workflows/verify-web.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Model tests and production build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run model tests
+        run: npm test
+      - name: Build production site
+        run: npm run build

@@ -16,7 +16,6 @@ The web project is in web/. It uses React, TypeScript, and Vite. From that direc
     npm install
     npm test
     npm run build
-    npm run lint
 
 Report the commands that passed. If dependencies could not be installed, state that rather than claiming the build passed.
 

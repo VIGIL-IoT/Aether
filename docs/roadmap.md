@@ -7,6 +7,7 @@ This roadmap lists work that would improve the project's evidence and maintainab
 - [x] Make the browser simulator's model-only behavior explicit.
 - [x] Add the unbuilt KiCad carrier proposal and record its CAD checks.
 - [x] Replace unsupported battery, performance, and compliance claims with evidence-based status.
+- [x] Add CI for the web model tests and production build.
 - [ ] Confirm a successful Vercel deployment from the web/ project root after the configuration fix.
 - [ ] Add a reproducible dependency lockfile and automated web build checks.
 

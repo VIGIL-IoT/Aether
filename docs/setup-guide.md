@@ -16,9 +16,9 @@ To check the model and build the static site:
 
     npm test
     npm run build
-    npm run lint
 
 The production output is written to web/dist/.
+GitHub Actions runs the model tests and production build for web changes.
 
 ## Vercel
 
