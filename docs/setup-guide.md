@@ -26,6 +26,8 @@ The configured Vercel project root is web/. Its vercel.json uses the package bui
 
 A previous deployment log for commit 505cee1 used a command that tried to change into web/ from within the web project root. The root-specific Vercel configuration was added in commit 3d34006. The supplied failing log predates that commit; a successful deployment after the configuration change has not yet been recorded here.
 
+GitHub Actions run 41360318358 passed npm install, npm test, and npm run build from web/ on commit 06684db. The live URL responds successfully, but its served revision is not exposed, so this does not confirm which commit Vercel deployed.
+
 ## KiCad carrier
 
 Open hardware/kicad/aether-carrier-r1/Aether-Carrier-R1.kicad_pro with KiCad 10 or later. The project-local Aether.pretty library contains custom socket footprints. Review the carrier README and verify exact mating components before treating the design as suitable for fabrication.
