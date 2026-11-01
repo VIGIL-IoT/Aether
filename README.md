@@ -1,165 +1,80 @@
-![License](https://img.shields.io/badge/license-GPL--v3%20%2B%20CERN--OHL--S--v2-blue) ![Platform](https://img.shields.io/badge/platform-ESP32-green) ![RF Band](https://img.shields.io/badge/RF-2.4%20GHz-orange) ![Status](https://img.shields.io/badge/status-experimental-yellow) ![Build](https://img.shields.io/badge/build-passing-brightgreen) ![Version](https://img.shields.io/badge/version-v1.0-blue)
-
 # Aether
 
-![Aether Cover Image](assets/images/Aether%20Cover%20Image.png)
+Aether is an open-source learning project with a browser-based model of two nRF24 channel selectors and a proposed KiCad carrier for an ESP32 DevKitC V4 with two nRF24 breakouts.
 
-> **Open RF Learning Platform** - Dual NRF24L01+ transceivers on ESP32 for 2.4 GHz wireless experimentation
+## Project status
 
-**Aether** is a portable RF research platform that transforms abstract wireless theory into hands-on experiments. Built around an ESP32 and dual NRF24L01+ transceivers, it enables controlled study of frequency hopping, protocol coexistence, and signal propagation in the 2.4 GHz ISM band.
+| Part | Status |
+| --- | --- |
+| Browser simulator | Implemented. Deterministically models channel selection; emits no RF. |
+| KiCad carrier R1 | Schematic and two-layer board are present and pass the recorded KiCad ERC/DRC checks. The design is unbuilt and has not been fit-checked. |
+| ESP32 firmware | Legacy sketches are present but are not verified against the R1 carrier or validated on hardware. Some sketches contain RF transmission routines. |
+| RF experiments | Proposals only. No measurement data or experiment results are checked in. |
 
-## Quick Start
+The live simulator is [aether-nrf-sim.vercel.app](https://aether-nrf-sim.vercel.app/). It is the Aether app; vigil-lyart-iota.vercel.app is unrelated.
 
-```bash
-# Clone the repository
-git clone https://github.com/shaxntanu/Aether.git
-cd Aether
+## What the simulator does
 
-# Open firmware in Arduino IDE
-# Install ESP32 board package and RF24 library
-# Upload firmware/esp32/dual_radio_hopping.ino
-```
+- Shows two model radios selecting among RF_CH values 0–125.
+- Maps each value to a modelled centre frequency using 2400 MHz + RF_CH.
+- Provides sequential, seeded-random, and fixed-offset selection modes.
+- Tracks modelled visits and elapsed simulated time.
+- Marks selected Wi-Fi and Bluetooth LE frequencies for reference.
 
-📖 **[Complete Setup Guide](docs/setup-guide.md)** | 🔧 **[Assembly Instructions](docs/assembly-guide.md)** | 📋 **[Documentation Hub](docs/index.md)**
+The simulator does not transmit RF, scan the spectrum, generate Wi-Fi or BLE traffic, simulate packets, or measure RSSI, power, temperature, or battery state. Its outputs are deterministic software-model results.
 
-## What is Aether?
+## Run the simulator
 
-Aether is an educational platform for understanding how WiFi, Bluetooth, and other 2.4 GHz protocols coexist without mutual interference. It provides:
+Requires Node.js 18 or newer.
 
-- **Dual-radio architecture** for simultaneous TX/RX operations
-- **126 channel coverage** across 2.400-2.525 GHz spectrum  
-- **Configurable power levels** and data rates for range testing
-- **Battery-powered portability** for field experiments
-- **Open hardware design** with complete schematics and PCB files
+    cd web
+    npm install
+    npm run dev
 
-**Perfect for:** RF engineering students, wireless protocol researchers, embedded systems learners, and makers exploring the invisible electromagnetic world around us.
+The model checks and production build are:
 
-## Key Features
+    npm test
+    npm run build
+    npm run lint
 
-| Feature | Specification | Purpose |
-|---------|---------------|---------|
-| **Dual SPI buses** | HSPI + VSPI | Eliminate bus contention, enable simultaneous operation |
-| **Frequency range** | 2.400-2.525 GHz | Full ISM band coverage, 126 channels @ 1 MHz spacing |
-| **Data rates** | 250kbps, 1Mbps, 2Mbps | Study rate vs. range tradeoffs |
-| **TX power** | -18 to +7 dBm | Configurable for interference and range studies |
-| **Battery life** | 8-12 hours | Portable operation for field experiments |
-| **External antennas** | RP-SMA connectors | Controlled radiation patterns, directional studies |
+See [web/README.md](web/README.md) for controls and [docs/setup-guide.md](docs/setup-guide.md) for setup details.
 
-## Hardware Overview
+## Hardware
 
-```
-ESP32 ←→ NRF24 #1 (HSPI) ←→ Antenna #1
-  ↓
-  ↓    ←→ NRF24 #2 (VSPI) ←→ Antenna #2
-  ↓
-Li-ion Battery + Charging Circuit
-```
+The current carrier proposal is in [hardware/kicad/aether-carrier-r1](hardware/kicad/aether-carrier-r1/). It is powered through the ESP32 DevKit's USB input and routes its 3V3/GND and GPIO signals to two radio sockets. It has no battery, charger, USB connector, regulator, or external antenna connector.
 
-**Core Components:**
-- ESP32-WROOM-32 (dual-core, dual SPI)
-- 2× NRF24L01+ transceivers with PA+LNA
-- 18650 Li-ion battery with TP4056 charging
-- 2× 100µF decoupling capacitors (mandatory)
-- Custom PCB with optimized power distribution
+Open the KiCad project file in that folder. Review its [README](hardware/kicad/aether-carrier-r1/README.md) and BOM before considering fabrication. The board assumes specific mating-board dimensions and pin numbering; verify the actual parts and mechanical clearances before ordering. ERC/DRC results do not establish physical fit, RF performance, or regulatory compliance.
 
-> **Critical Design Note:** The 100µF capacitors are not optional. NRF24L01+ modules draw 160mA current spikes during transmission. Without local energy storage, voltage droop corrupts SPI communication and causes transmission failures.
+The older files under [hardware/schematics](hardware/schematics/) and the older PCB notes are retained as legacy material and are not the R1 design.
 
-## Research Applications
+## Safety and firmware status
 
-Aether enables hands-on exploration of:
+The browser simulator is software-only. The legacy firmware is a separate, unvalidated codebase; it has not been reconciled with the R1 pin map, tested on hardware, or reviewed for deployment. Do not treat its presence as evidence of a safe or working radio. Review [docs/legal-and-safety.md](docs/legal-and-safety.md) before handling transmitter-capable hardware.
 
-**Protocol Coexistence:**
-- WiFi channel overlap with Bluetooth frequency hopping
-- Zigbee adaptive frequency agility in crowded spectrum
-- Packet collision probability in multi-protocol environments
+## Documentation
 
-**RF Propagation:**
-- Path loss vs. distance in different environments
-- Attenuation through common materials (walls, water, human tissue)
-- Antenna pattern effects on signal strength and interference
+- [Documentation hub](docs/index.md)
+- [Current architecture](docs/architecture.md)
+- [Project scope and requirements](docs/project-scope.md)
+- [Limitations](docs/limitations.md)
+- [Traceability](docs/traceability.md)
+- [Validation record](docs/testing-methodology.md)
+- [KiCad carrier R1](hardware/kicad/aether-carrier-r1/README.md)
+- [Experiments: proposals and status](experiments/README.md)
+- [Security policy](SECURITY.md)
 
-**Embedded Systems:**
-- Dual SPI bus management and timing constraints
-- Power optimization for battery-powered RF devices
-- Real-time protocol implementation in embedded C++
+## Repository layout
 
-## Repository Structure
+    docs/          Project, architecture, setup, and validation documentation
+    experiments/   Unexecuted experiment proposals; no result data
+    firmware/      Legacy ESP32/nRF24 sketches, unvalidated against carrier R1
+    hardware/      Current KiCad carrier and legacy hardware material
+    web/           React/TypeScript simulator, model tests, and Vite/Vercel config
 
-```
-aether/
-├── docs/                    # 📚 Complete documentation
-│   ├── setup-guide.md      # Toolchain and assembly instructions
-│   ├── architecture.md     # System design and signal flow
-│   ├── rf-notes.md         # 2.4 GHz theory and propagation
-│   └── experiments/        # Research methodology and results
-├── firmware/
-│   ├── esp32/              # Arduino sketches for ESP32
-│   └── nrf24/              # NRF24L01+ driver code
-├── hardware/
-│   ├── schematics/         # Circuit diagrams and netlists
-│   ├── pcb/                # PCB layout and fabrication files
-│   └── enclosure/          # 3D printable case design
-├── experiments/            # Structured RF research protocols
-└── tools/                  # Analysis scripts and utilities
-```
+## Licensing
 
-## Getting Started
-
-### Prerequisites
-- Arduino IDE with ESP32 board package
-- RF24 library by TMRh20
-- Basic electronics knowledge (breadboard, multimeter)
-
-### Hardware Assembly
-1. **Power system:** Connect 18650 battery through TP4056 to 3.3V regulator
-2. **NRF24 modules:** Wire to ESP32 HSPI/VSPI with 100µF decoupling capacitors
-3. **Antennas:** Attach RP-SMA antennas for improved range and directionality
-
-### First Experiment
-```cpp
-// Load firmware/esp32/dual_radio_hopping.ino
-// Radio #1 transmits on channels 0-62
-// Radio #2 receives on channels 63-125
-// Observe packet success rate vs. channel separation
-```
-
-**Next Steps:**
-- 📖 Read the [Architecture Guide](docs/architecture.md) to understand dual-SPI topology
-- 🔬 Try [Channel Overlap Experiment](experiments/exp01-channel-overlap/README.md)
-- 🛠️ Build the [Custom PCB](hardware/pcb/README.md) for permanent installation
-
-## Legal and Safety
-
-> [!WARNING]
-> **Educational Use Only:** Aether is designed for controlled RF research in laboratory environments. All experimentation must comply with local spectrum regulations and RF emission limits. This project does not support unauthorized interference with commercial wireless systems.
-
-**Compliance:** FCC Part 15, ETSI EN 300 328, IC RSS-210  
-**Power Limits:** <100mW EIRP (compliant with ISM band regulations)  
-**Intended Use:** Educational research, protocol analysis, RF learning
-
-## Credits
-
-**Firmware Foundation:** Derived from [Ble-jammer](https://github.com/smoochiee/Ble-jammer) by smoochiee (GPL v3)  
-**Hardware & Documentation:** Original work by Shantanu (CERN-OHL-S v2)  
-**Modifications:** See [firmware/CHANGES.md](firmware/CHANGES.md) for detailed changelog
-
-## License
-
-**Dual License Structure:**
-- **Firmware:** GPL v3 (derivative work, maintains original licensing)
-- **Hardware:** CERN-OHL-S v2 (schematics, PCB, enclosure)
-- **Documentation:** CERN-OHL-S v2 (experiments, guides, analysis)
+The repository contains a GPL-3.0 license and a CERN-OHL-S v2 hardware license. Check the relevant license file and file headers for the material you use. Firmware provenance is not fully audited; see [firmware/CHANGES.md](firmware/CHANGES.md). No license terms have been changed as part of this status correction.
 
 ## Contributing
 
-We welcome contributions that enhance Aether's educational value:
-- 🐛 Bug fixes and firmware improvements
-- 📊 New experiment protocols and analysis tools  
-- 🔧 Hardware design optimizations
-- 📚 Documentation and tutorial enhancements
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines and coding standards.
-
----
-
-**[📋 Documentation Hub](docs/index.md)** • **[🔧 Setup Guide](docs/setup-guide.md)** • **[🏗️ Architecture](docs/architecture.md)** • **[🔬 Experiments](experiments/README.md)** • **[💾 Firmware](firmware/esp32/README.md)** • **[⚡ Hardware](hardware/BOM.md)**
+See [CONTRIBUTING.md](CONTRIBUTING.md). Contributions should preserve the distinction between simulated output, unverified firmware, and measured hardware results.
