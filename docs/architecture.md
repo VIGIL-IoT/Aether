@@ -1,5 +1,9 @@
 # Aether architecture
 
+## Diagram
+
+[Open the current-system architecture diagram](architecture/aether-current-system.html). It uses the simulator palette from `web/src/index.css` and distinguishes the browser runtime from the separate, unbuilt carrier and legacy firmware.
+
 ## Current system
 
 Aether currently has two separate parts: a browser-only channel-selection model and a KiCad carrier design. The browser app does not communicate with the hardware or firmware.
