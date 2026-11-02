@@ -4,11 +4,11 @@ A two-layer socket carrier for one ESP32-DevKitC V4 and two nRF24L01+ breakout m
 
 ## Files
 
-- `Aether-Carrier-R1.kicad_pro` — KiCad project settings
-- `Aether-Carrier-R1.kicad_sch` — electrical schematic
-- `Aether-Carrier-R1.kicad_pcb` — routed carrier board
-- `Aether.pretty/` — custom socket footprints
-- `BOM.csv` — connector, passive, and mating-module list
+- `Aether-Carrier-R1.kicad_pro`: KiCad project settings
+- `Aether-Carrier-R1.kicad_sch`: electrical schematic
+- `Aether-Carrier-R1.kicad_pcb`: routed carrier board
+- `Aether.pretty/`: custom socket footprints
+- `BOM.csv`: connector, passive, and mating-module list
 
 Open the project with KiCad 10 or later. The custom footprints are loaded from the project-local `Aether.pretty` library.
 

@@ -7,6 +7,7 @@ Contributions should improve the implemented simulator, make the carrier proposa
 - Keep simulated behavior distinct from physical measurements.
 - Do not add unsupported performance, battery, hardware, or compliance claims.
 - Do not add features intended to disrupt communications.
+- Avoid em dash punctuation in interface text, Markdown, LaTeX, and other project content. Use a comma, colon, parenthesis, or standard hyphen instead.
 - Check whether the affected material is covered by LICENSE, LICENSE-HARDWARE, or a file-specific notice. Firmware provenance has not been fully audited; do not assume a licensing conclusion from source comments alone.
 
 ## Web changes
