@@ -2,6 +2,8 @@
 
 A two-layer socket carrier for one ESP32-DevKitC V4 and two nRF24L01+ breakout modules. This is a KiCad design proposal; it has not been fabricated, assembled, or physically fit-checked.
 
+See [hardware references](../../../docs/hardware-references.md) for manufacturer constraints and [engineering evidence](../../../docs/engineering-evidence.md) for assumptions and failure modes. Exact mating-board and breakout module MPNs are not recorded.
+
 ## Files
 
 - `Aether-Carrier-R1.kicad_pro`: KiCad project settings

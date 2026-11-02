@@ -28,7 +28,7 @@ The CAD method and recorded ERC/DRC checks are described in the [carrier README]
 
 ## Verification method
 
-Node's built-in test runner exercises the pure model's frequency mapping, sequential wrap, fixed offset, seeded repeatability, and visit counts. CI uses a clean lockfile install, runs the dependency audit, executes the model tests, and builds the static site. These checks do not exercise the rendered UI in a browser or any physical device. See the [validation record](testing-methodology.md) and [traceability matrix](traceability.md).
+From `web/`, `npm run verify` checks local Markdown file links and the repository punctuation rule, audits the locked npm dependency graph, runs Node's built-in model tests, and performs the TypeScript and Vite production build. The model suite exercises frequency mapping, invalid channel values and ranges, sequential wrap, custom-range entry, fixed offset, seeded repeatability, and visit counts. CI runs this same command after a clean lockfile install. These checks do not exercise radio hardware. A manual browser accessibility review is recorded separately and is not an automated cross-browser test. See the [validation record](testing-methodology.md), [traceability matrix](traceability.md), and [engineering evidence](engineering-evidence.md).
 
 ## Experimental method
 
