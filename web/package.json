@@ -10,7 +10,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "node --test"
+    "test": "node --test",
+    "verify:docs": "node ../tools/verify-docs.mjs",
+    "verify": "node ../tools/verify-project.mjs"
   },
   "dependencies": {
     "react": "^18.2.0",

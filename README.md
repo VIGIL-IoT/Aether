@@ -51,10 +51,9 @@ Requires Node.js 24 (see [.nvmrc](.nvmrc) and `web/package.json`).
     npm ci
     npm run dev
 
-The model checks and production build are:
+From `web/`, run the one-command verification path:
 
-    npm test
-    npm run build
+    npm run verify
 
 See [web/README.md](web/README.md) for controls and [docs/setup-guide.md](docs/setup-guide.md) for setup details.
 

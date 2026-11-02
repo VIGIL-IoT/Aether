@@ -11,14 +11,13 @@ npm ci
 npm run dev
 ```
 
-Run the model tests and production build with:
+Run the repository documentation checks, dependency audit, model tests, type check, and production build with:
 
 ```sh
-npm test
-npm run build
+npm run verify
 ```
 
-The app uses React 18, TypeScript, and Vite. Use Node.js 24, matching the repository `.nvmrc`, package engine, and CI runtime.
+The app uses React 18, TypeScript, and Vite. Use Node.js 24, matching the repository `.nvmrc`, package engine, and CI runtime. GitHub Actions runs a clean install and this same verification command.
 
 ## Model controls
 

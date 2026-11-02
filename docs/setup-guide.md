@@ -12,13 +12,11 @@ From the repository root, run:
 
 Open the local URL printed by Vite. The app runs in the browser and needs no radio, account, API key, or device connection.
 
-To check the model and build the static site:
+To verify documentation links and punctuation, audit web dependencies, run model tests, type-check, and build the static site:
 
-    npm test
-    npm run build
+    npm run verify
 
-The production output is written to `web/dist/`.
-GitHub Actions runs a clean `npm ci`, a moderate-level dependency audit, the model tests, and the production build for web changes. See the [dependency management guide](dependency-management.md) for audits and SBOM generation.
+The production output is written to `web/dist/`. GitHub Actions runs a clean `npm ci` followed by this same verification command. See the [dependency management guide](dependency-management.md) for audits and SBOM generation.
 
 ## Vercel
 

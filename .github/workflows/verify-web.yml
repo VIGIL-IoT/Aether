@@ -3,14 +3,26 @@ name: Verify web simulator
 on:
   push:
     paths:
+      - "**/*.md"
       - "web/**"
+      - "tools/verify-docs.mjs"
+      - "tools/verify-project.mjs"
+      - "hardware/**"
+      - "firmware/**"
       - ".github/workflows/verify-web.yml"
+      - ".github/dependabot.yml"
       - ".nvmrc"
       - "vercel.json"
   pull_request:
     paths:
+      - "**/*.md"
       - "web/**"
+      - "tools/verify-docs.mjs"
+      - "tools/verify-project.mjs"
+      - "hardware/**"
+      - "firmware/**"
       - ".github/workflows/verify-web.yml"
+      - ".github/dependabot.yml"
       - ".nvmrc"
       - "vercel.json"
   workflow_dispatch:
@@ -20,23 +32,21 @@ permissions:
 
 jobs:
   verify:
-    name: Model tests and production build
-    runs-on: ubuntu-latest
+    name: Documentation, dependencies, tests, and production build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: web
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
+          package-manager-cache: false
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
-      - name: Audit dependencies
-        run: npm audit --audit-level=moderate
-      - name: Run model tests
-        run: npm test
-      - name: Build production site
-        run: npm run build
+      - name: Verify docs, dependencies, tests, and production build
+        run: npm run verify
