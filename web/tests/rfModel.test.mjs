@@ -12,6 +12,9 @@ test('RF_CH frequency mapping covers 2400 through 2525 MHz', () => {
   assert.equal(channelFrequencyMHz(0), 2400);
   assert.equal(channelFrequencyMHz(125), 2525);
   assert.throws(() => channelFrequencyMHz(126), RangeError);
+  assert.throws(() => channelFrequencyMHz(-1), RangeError);
+  assert.throws(() => channelFrequencyMHz(1.5), RangeError);
+  assert.throws(() => channelFrequencyMHz(Number.NaN), RangeError);
 });
 
 test('sequential hopping advances both radios and counts channel selections', () => {
@@ -36,6 +39,44 @@ test('sequential hopping wraps at the configured channel range', () => {
 
   assert.equal(next.radio1.channel, 0);
   assert.equal(next.radio2.channel, 0);
+});
+
+test('sequential hopping enters a custom range from an out-of-range channel', () => {
+  const initial = createInitialModel();
+  initial.channelRange = [124, 125];
+
+  const next = stepModel(initial);
+
+  assert.equal(next.radio1.channel, 124);
+  assert.equal(next.radio2.channel, 124);
+});
+
+test('single-channel ranges keep every hop mode on that channel', () => {
+  for (const hopMode of ['SEQUENTIAL', 'FIXED_OFFSET', 'SEEDED_RANDOM']) {
+    const initial = createInitialModel();
+    initial.channelRange = [125, 125];
+    initial.hopMode = hopMode;
+
+    const next = stepModel(initial);
+
+    assert.equal(next.radio1.channel, 125, `${hopMode} radio 1`);
+    assert.equal(next.radio2.channel, 125, `${hopMode} radio 2`);
+  }
+});
+
+test('invalid channel ranges are rejected before indexing visit arrays', () => {
+  for (const channelRange of [
+    [-1, 125],
+    [0, 126],
+    [8, 7],
+    [0.5, 10],
+    [0, Number.NaN],
+    [0],
+    [0, 10, 11],
+  ]) {
+    const model = { ...createInitialModel(), channelRange };
+    assert.throws(() => stepModel(model), RangeError, JSON.stringify(channelRange));
+  }
 });
 
 test('fixed separation is modulo the configured range', () => {

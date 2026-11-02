@@ -34,7 +34,7 @@ function nextRandom(seed) {
 }
 
 function nextSequential(channel, min, max) {
-  return channel >= max ? min : channel + 1;
+  return channel < min || channel >= max ? min : channel + 1;
 }
 
 function channelFromRandom(random, min, max) {
@@ -42,8 +42,13 @@ function channelFromRandom(random, min, max) {
 }
 
 export function stepModel(model) {
-  const [min, max] = model.channelRange;
-  if (min < 0 || max >= CHANNEL_COUNT || min > max) {
+  const range = model.channelRange;
+  if (!Array.isArray(range) || range.length !== 2) {
+    throw new RangeError('The simulation channel range must contain two integer bounds');
+  }
+
+  const [min, max] = range;
+  if (!Number.isInteger(min) || !Number.isInteger(max) || min < 0 || max >= CHANNEL_COUNT || min > max) {
     throw new RangeError('The simulation channel range must stay within RF_CH 0–125');
   }
 
