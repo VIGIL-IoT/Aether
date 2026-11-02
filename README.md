@@ -1,5 +1,7 @@
 # Aether
 
+[![Web checks](https://github.com/VIGIL-IoT/Aether/actions/workflows/verify-web.yml/badge.svg?branch=main)](https://github.com/VIGIL-IoT/Aether/actions/workflows/verify-web.yml)
+
 Aether is an open-source learning project with a browser-based model of two nRF24 channel selectors and a proposed KiCad carrier for an ESP32 DevKitC V4 with two nRF24 breakouts.
 
 ## Project status
@@ -23,12 +25,30 @@ The live simulator is [aether-nrf-sim.vercel.app](https://aether-nrf-sim.vercel.
 
 The simulator does not transmit RF, scan the spectrum, generate Wi-Fi or BLE traffic, simulate packets, or measure RSSI, power, temperature, or battery state. Its outputs are deterministic software-model results.
 
+## Architecture
+
+```mermaid
+flowchart LR
+    Host["Vercel static host<br/>web/dist"] -->|static assets| UI["React browser interface<br/>controls · spectrum · history"]
+    UI -->|actions| Store["In-memory simulation store"]
+    Timer["Browser interval"] -->|step() while running| Store
+    Store -->|current state| Model["Pure deterministic RF_CH model"]
+    Model -->|next state| Store
+    Store -->|subscribed snapshots| UI
+    subgraph Separate["Separate repository artifacts · no runtime link"]
+        Carrier["KiCad carrier R1<br/>unbuilt proposal"]
+        Firmware["Legacy ESP32 firmware<br/>unvalidated"]
+    end
+```
+
+See the [detailed current-system architecture](docs/architecture.md) for the component boundary and validation limits.
+
 ## Run the simulator
 
-Requires Node.js 18 or newer.
+Requires Node.js 24 (see [.nvmrc](.nvmrc) and `web/package.json`).
 
     cd web
-    npm install
+    npm ci
     npm run dev
 
 The model checks and production build are:
@@ -37,6 +57,8 @@ The model checks and production build are:
     npm run build
 
 See [web/README.md](web/README.md) for controls and [docs/setup-guide.md](docs/setup-guide.md) for setup details.
+
+For the algorithm, test method, and limits, see [methodology](docs/methodology.md). Dependency audits and on-demand SBOM generation are documented in [dependency management](docs/dependency-management.md).
 
 ## Hardware
 
@@ -55,9 +77,13 @@ The browser simulator is software-only. The legacy firmware is a separate, unval
 - [Documentation hub](docs/index.md)
 - [Current architecture](docs/architecture.md)
 - [Project scope and requirements](docs/project-scope.md)
+- [Implementation methodology](docs/methodology.md)
+- [Research gap and evidence needs](docs/research-gap.md)
 - [Limitations](docs/limitations.md)
 - [Traceability](docs/traceability.md)
 - [Validation record](docs/testing-methodology.md)
+- [Repository audit](docs/REPOSITORY_AUDIT.md)
+- [Dependency management](docs/dependency-management.md)
 - [KiCad carrier R1](hardware/kicad/aether-carrier-r1/README.md)
 - [Experiments: proposals and status](experiments/README.md)
 - [Security policy](SECURITY.md)

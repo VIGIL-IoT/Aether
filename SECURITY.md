@@ -14,6 +14,6 @@ No response-time commitment is currently established. If private reporting is un
 
 ## Review scope and limitations
 
-Relevant assets include the source code, static deployment, KiCad files, and legacy firmware. The static web application has no authentication boundary or backend. The firmware and physical hardware boundary is not validated. Dependency vulnerability status and firmware provenance have not been fully audited.
+Relevant assets include the source code, static deployment, KiCad files, and legacy firmware. The static web application has no authentication boundary or backend. The firmware and physical hardware boundary is not validated. On 2026-11-02, `npm audit --audit-level=moderate` reported no known advisories for the locked web dependency tree; GitHub Actions repeats this check. This point-in-time check does not review package behavior, firmware provenance, source licensing, deployment configuration, or future advisories.
 
 This policy does not claim a security certification or a completed threat assessment.

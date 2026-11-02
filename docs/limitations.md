@@ -9,7 +9,8 @@ This page records what the current repository does not establish.
 - The displayed frequencies and visit counts are model outputs, not measurements.
 - Browser timer scheduling is not a real-time guarantee.
 - Automated tests cover the pure model; UI behavior has not been covered by browser automation.
-- The repository has no ESLint configuration or dependency and no checked-in npm lockfile.
+- The repository has no ESLint configuration or dependency; static linting is not configured.
+- Dependency audit results apply to the locked web npm tree and the date run. They do not establish firmware provenance, runtime security, or future dependency status.
 
 ## Hardware
 
@@ -30,4 +31,4 @@ This page records what the current repository does not establish.
 - Experiment folders contain proposals, not executed studies or results.
 - There are no hardware benchmarks, performance measurements, participant approvals, or environmental study data.
 - No SDG or societal-impact claim is supported by outcome evidence.
-- Dependency vulnerability status, firmware licensing provenance, and production security have not been fully audited.
+- The web dependency tree had 0 findings at moderate severity or higher in the audit run recorded on 2026-11-02. Firmware licensing provenance and production security have not been fully audited.

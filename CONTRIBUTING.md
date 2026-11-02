@@ -13,7 +13,7 @@ Contributions should improve the implemented simulator, make the carrier proposa
 
 The web project is in web/. It uses React, TypeScript, and Vite. From that directory:
 
-    npm install
+    npm ci
     npm test
     npm run build
 

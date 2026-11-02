@@ -51,3 +51,7 @@ The software is successful for its current narrow purpose when the deterministic
 - Hardware connector footprints assume the specific dimensions documented in the carrier README.
 - No physical device or lab measurement evidence is currently included.
 - Firmware provenance and licenses require a separate audit before release claims.
+
+## Research-gap status
+
+The repository has not completed a literature review and does not claim a field-wide research gap or novelty. Its documented gap is the absence of physical validation and learning-outcome evidence for the current simulator concept. See [research gap and evidence needs](research-gap.md).

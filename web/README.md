@@ -7,7 +7,7 @@ It does not transmit RF, measure signal power, generate Wi-Fi or BLE traffic, si
 ## Run locally
 
 ```sh
-npm install
+npm ci
 npm run dev
 ```
 
@@ -18,7 +18,7 @@ npm test
 npm run build
 ```
 
-The app uses React 18, TypeScript, and Vite. It requires Node.js 18 or newer.
+The app uses React 18, TypeScript, and Vite. Use Node.js 24, matching the repository `.nvmrc`, package engine, and CI runtime.
 
 ## Model controls
 

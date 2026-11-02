@@ -7,9 +7,14 @@ This hub describes the implemented browser simulator and the unbuilt carrier pro
 - [Project scope and requirements](project-scope.md)
 - [Current architecture](architecture.md)
 - [Setup guide](setup-guide.md)
+- [Implementation methodology](methodology.md)
+- [Research gap and evidence needs](research-gap.md)
+- [Repository audit and maturity score](REPOSITORY_AUDIT.md)
+- [Dependency management and SBOM](dependency-management.md)
 - [Known limitations](limitations.md)
 - [Validation record](testing-methodology.md)
 - [Requirements traceability](traceability.md)
+- [ADR-001: browser model boundary](decisions/ADR-001-browser-model-boundary.md)
 - [SDG assessment](sdg-alignment.md)
 
 ## Browser simulator

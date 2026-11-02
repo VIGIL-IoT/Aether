@@ -45,4 +45,4 @@ Nothing in this path reads or writes radio hardware.
 - KiCad for the separate carrier proposal
 - Vercel for static hosting
 
-See [project scope](project-scope.md), [limitations](limitations.md), and the [validation record](testing-methodology.md) for capability and evidence boundaries.
+See [project scope](project-scope.md), [limitations](limitations.md), and the [validation record](testing-methodology.md) for capability and evidence boundaries. The implementation rules are in [methodology](methodology.md); the current boundary is recorded in [ADR-001](decisions/ADR-001-browser-model-boundary.md).

@@ -9,7 +9,8 @@ This roadmap lists work that would improve the project's evidence and maintainab
 - [x] Replace unsupported battery, performance, and compliance claims with evidence-based status.
 - [x] Add CI for the web model tests and production build.
 - [ ] Confirm a successful Vercel deployment from the web/ project root after the configuration fix.
-- [ ] Add a reproducible dependency lockfile and automated web build checks.
+- [x] Add a reproducible dependency lockfile and automated web build checks.
+- [x] Pin a supported Node.js runtime, add dependency auditing, and document on-demand SBOM generation.
 
 ## Short term
 

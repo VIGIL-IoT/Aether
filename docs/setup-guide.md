@@ -2,12 +2,12 @@
 
 ## Browser simulator
 
-The active application is in web/. It requires Node.js 18 or newer and npm.
+The active application is in `web/`. Use Node.js 24 and npm. The `.nvmrc`, package `engines` field, lockfile, and CI all describe the same runtime and install set.
 
 From the repository root, run:
 
     cd web
-    npm install
+    npm ci
     npm run dev
 
 Open the local URL printed by Vite. The app runs in the browser and needs no radio, account, API key, or device connection.
@@ -17,8 +17,8 @@ To check the model and build the static site:
     npm test
     npm run build
 
-The production output is written to web/dist/.
-GitHub Actions runs the model tests and production build for web changes.
+The production output is written to `web/dist/`.
+GitHub Actions runs a clean `npm ci`, a moderate-level dependency audit, the model tests, and the production build for web changes. See the [dependency management guide](dependency-management.md) for audits and SBOM generation.
 
 ## Vercel
 
@@ -26,7 +26,7 @@ The configured Vercel project root is web/. Its vercel.json uses the package bui
 
 A previous deployment log for commit 505cee1 used a command that tried to change into web/ from within the web project root. The root-specific Vercel configuration was added in commit 3d34006. The supplied failing log predates that commit; a successful deployment after the configuration change has not yet been recorded here.
 
-GitHub Actions run 41360318358 passed npm install, npm test, and npm run build from web/ on commit 06684db. The live URL responds successfully, but its served revision is not exposed, so this does not confirm which commit Vercel deployed.
+GitHub Actions run [41424242681](https://github.com/VIGIL-IoT/Aether/actions/runs/41424242681) passed `npm ci`, `npm audit`, `npm test`, and `npm run build` on Node.js 24 for commit `932c89a`. This checks the package build from `web/`; it does not establish which revision the live URL serves. A successful Vercel deployment after the root configuration fix remains unconfirmed.
 
 ## KiCad carrier
 
