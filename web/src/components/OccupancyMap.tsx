@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { CHANNEL_COUNT, channelFrequencyMHz } from '../domain/rfModel.mjs';
 import { useSimulationStore } from '../store/simulationStore';
 
@@ -7,6 +8,7 @@ const PLOT_WIDTH = PLOT_RIGHT - PLOT_LEFT;
 const xForChannel = (channel: number) => PLOT_LEFT + (channel / 125) * PLOT_WIDTH;
 
 export const ChannelHistory = () => {
+  const [showDataTable, setShowDataTable] = useState(false);
   const visits1 = useSimulationStore((state) => state.visits1);
   const visits2 = useSimulationStore((state) => state.visits2);
   const steps = useSimulationStore((state) => state.steps);
@@ -25,14 +27,14 @@ export const ChannelHistory = () => {
         <button className="quiet-button" type="button" onClick={reset}>Reset model</button>
       </div>
 
-      <div className="history-overview" aria-live="polite">
+      <div className="history-overview">
         <span><strong>{(elapsedMs / 1000).toFixed(2)} s</strong> simulated time</span>
         <span><strong>{steps * 2}</strong> radio selections</span>
         <span><strong>{activeChannels}</strong> channels visited</span>
         <span><strong>{CHANNEL_COUNT}</strong> channels in range</span>
       </div>
 
-      <div className="history-scroll" tabIndex={0} aria-label="Scrollable channel visit chart">
+      <div className="history-scroll" role="region" tabIndex={0} aria-label="Scrollable channel visit chart">
         <svg
           className="history-chart"
           viewBox="0 0 1080 256"
@@ -80,11 +82,40 @@ export const ChannelHistory = () => {
         </svg>
       </div>
 
-      <div className="history-legend">
+      <div className="history-legend" role="group" aria-label="Channel history legend">
         <span><i className="legend-radio-one" aria-hidden="true" />Radio 1 · HSPI</span>
         <span><i className="legend-radio-two" aria-hidden="true" />Radio 2 · VSPI</span>
         <span>Taller bar = more simulated selections</span>
       </div>
+
+      <details className="history-data" onToggle={(event) => setShowDataTable(event.currentTarget.open)}>
+        <summary>View channel visit data as a table</summary>
+        {showDataTable && (
+          <div className="history-table-scroll" role="region" tabIndex={0} aria-label="Channel visit count data">
+            <table className="history-table">
+              <caption>Simulated selections per channel. These values are not RF measurements.</caption>
+              <thead>
+                <tr>
+                  <th scope="col">RF_CH</th>
+                  <th scope="col">Frequency (MHz)</th>
+                  <th scope="col">Radio 1 selections</th>
+                  <th scope="col">Radio 2 selections</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: CHANNEL_COUNT }, (_, channel) => (
+                  <tr key={channel}>
+                    <th scope="row">{channel}</th>
+                    <td>{channelFrequencyMHz(channel)}</td>
+                    <td>{visits1[channel]}</td>
+                    <td>{visits2[channel]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </details>
     </section>
   );
 };

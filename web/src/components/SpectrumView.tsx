@@ -29,14 +29,14 @@ export const SpectrumView = () => {
         <div>
           <h2 id="spectrum-title">Where each radio is tuned</h2>
         </div>
-        <span className={`run-state ${isRunning && !isPaused ? 'is-running' : ''}`}>
+        <span className={`run-state ${isRunning && !isPaused ? 'is-running' : ''}`} role="status" aria-live="polite">
           <span className="state-dot" aria-hidden="true" />
           {isRunning ? (isPaused ? 'Paused' : 'Running') : 'Ready'}
         </span>
       </div>
 
       <p className="chart-scroll-hint">Swipe horizontally to inspect all 126 RF_CH values.</p>
-      <div className="chart-scroll" tabIndex={0} aria-label="Scrollable frequency chart">
+      <div className="chart-scroll" role="region" tabIndex={0} aria-label="Scrollable frequency chart">
         <svg
           className="spectrum-chart"
           viewBox="0 0 1080 356"
@@ -109,7 +109,7 @@ export const SpectrumView = () => {
           </g>
         </svg>
       </div>
-      <div className="chart-legend" aria-label="Chart legend">
+      <div className="chart-legend" role="group" aria-label="Chart legend">
         <span><i className="legend-radio-one" aria-hidden="true" />Radio 1</span>
         <span><i className="legend-radio-two" aria-hidden="true" />Radio 2</span>
         <span><i className="legend-wifi" aria-hidden="true" />Wi-Fi channel centres</span>
