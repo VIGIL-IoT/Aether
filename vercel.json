@@ -1,8 +1,7 @@
 {
-    "buildCommand": "(cd web && npm install && npm run build)",
-    "outputDirectory": "web/dist",
-    "framework": "vite",
-    "env": {
-        "NODE_ENV": "production"
-    }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd web && npm ci --include=dev --no-audit --no-fund",
+  "buildCommand": "cd web && npm run build",
+  "outputDirectory": "web/dist",
+  "framework": "vite"
 }

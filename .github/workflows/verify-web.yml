@@ -5,10 +5,14 @@ on:
     paths:
       - "web/**"
       - ".github/workflows/verify-web.yml"
+      - ".nvmrc"
+      - "vercel.json"
   pull_request:
     paths:
       - "web/**"
       - ".github/workflows/verify-web.yml"
+      - ".nvmrc"
+      - "vercel.json"
   workflow_dispatch:
 
 permissions:
@@ -27,9 +31,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
+      - name: Audit dependencies
+        run: npm audit --audit-level=moderate
       - name: Run model tests
         run: npm test
       - name: Build production site
