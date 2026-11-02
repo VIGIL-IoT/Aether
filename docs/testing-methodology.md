@@ -8,7 +8,7 @@ The verification command checks local Markdown targets and repository text for f
 
 The tests cover the 2400 to 2525 MHz endpoint mapping, rejection of invalid frequency inputs, sequential stepping and wraparound, entry into an upper-edge custom range, singleton ranges across all hop modes, malformed range rejection, fixed-offset behavior, seeded-random repeatability, channel bounds, elapsed model time, and visit-count totals. On 2026-11-02, Node.js v24.19.0 ran 8 tests: 8 passed, 0 failed.
 
-On 2026-11-02, a clean `npm ci --no-audit --no-fund` followed by `npm run verify` succeeded locally with Node.js v24.19.0 and npm 11.17.0. The audit reported 0 vulnerabilities. GitHub Actions run [41468904542](https://github.com/VIGIL-IoT/Aether/actions/runs/41468904542) completed successfully for commit `f53b40e` using Node.js 24, a clean install, dependency audit, documentation checks, model tests, and a production build on Ubuntu 24.04.
+On 2026-11-02, a clean `npm ci --no-audit --no-fund` followed by `npm run verify` succeeded locally with Node.js v24.19.0 and npm 11.17.0. The audit reported 0 vulnerabilities. The documentation checker scanned 91 text files and 49 Markdown files. GitHub Actions run [41471280856](https://github.com/VIGIL-IoT/Aether/actions/runs/41471280856) completed successfully for commit `28d0b50` using Node.js 24, a clean install, dependency audit, documentation checks, model tests, and a production build on Ubuntu 24.04.
 
 ## Manual accessibility review
 

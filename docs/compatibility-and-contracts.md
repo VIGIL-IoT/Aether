@@ -6,10 +6,10 @@ This matrix records declared targets separately from environments actually check
 
 | Platform or component | Declared or observed version | Status | Evidence | Limits |
 | --- | --- | --- | --- | --- |
-| Node.js runtime | 24.x; local test used v24.19.0 | CI verified | `web/package.json` and `.nvmrc`; GitHub Actions run [41468904542](https://github.com/VIGIL-IoT/Aether/actions/runs/41468904542) passed after clean install, audit, tests, and build. | Other Node major versions are unsupported by the declared engine and have not been checked. |
+| Node.js runtime | 24.x; local test used v24.19.0 | CI verified | `web/package.json` and `.nvmrc`; GitHub Actions run [41471280856](https://github.com/VIGIL-IoT/Aether/actions/runs/41471280856) passed after clean install, audit, tests, and build. | Other Node major versions are unsupported by the declared engine and have not been checked. |
 | npm CLI | Local npm 11.17.0; lockfile version 3 | Locally verified | Clean `npm ci --no-audit --no-fund` and `npm run verify` passed on Windows. | The exact npm version on the GitHub-hosted runner is not pinned. |
 | Windows | Windows development environment; npm log reports build 10.0.26300 | Locally verified | Clean install, dependency audit, eight Node tests, TypeScript check, Vite build, and local browser inspection completed. | Does not imply compatibility with every Windows release. |
-| Ubuntu | GitHub-hosted `ubuntu-24.04` runner | CI verified | Run 41468904542 completed successfully for commit `f53b40e`. | Other Linux distributions and architectures are untested. |
+| Ubuntu | GitHub-hosted `ubuntu-24.04` runner | CI verified | Run 41471280856 completed successfully for commit `28d0b50`. | Other Linux distributions and architectures are untested. |
 | macOS | No version declared | Untested | No local or CI run recorded. | Do not claim support. |
 | Browser | Desktop in-app browser used for local UI inspection; engine version not recorded | Partially verified | The app rendered, the accessibility tree exposed the controls and an expanded history table with 126 rows and headers. | No cross-browser matrix, screen-reader test, automated browser suite, mobile viewport review, or zoom review. |
 | Vercel | Static build from `web/` configured | Partially verified | Repository Vercel config and local/CI production build pass. | Dashboard root settings and deployed commit SHA are unavailable; current deployed revision is unknown. |
