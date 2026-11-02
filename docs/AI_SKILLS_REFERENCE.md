@@ -195,3 +195,52 @@ These five repositories were read as review references for the existing Carrier 
 | README and writing repos | Mostly public references, not installed; three prompt names could not be verified | No direct invocation; the prompt's writing requirements were applied | README and docs link checks |
 | KiCad and PCB skill repos | Public references read, not installed | Review criteria consulted; no upstream skill tool was invoked and no KiCad file changed | No new KiCad artifact; known constraints recorded in hardware/evidence docs |
 | ManimGX | Public repository reference, not installed | No | No measured series or animation artifact |
+
+## Token-efficient agent stack
+
+These tools were referenced in the user-supplied agent-stack instructions. Official GitHub pages were checked on 2026-11-02. The session's exposed MCP tools and local skill directories were checked before deciding whether any tool could be invoked. No package, plugin, or MCP server was installed or configured for this update.
+
+### Ponytail
+
+- **Repository:** [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail)
+- **Purpose and domain:** Agent skill and plugin for minimizing unnecessary implementation, with review and repository audit commands.
+- **Trigger and avoid:** Consider for substantive implementation reviews and repository audits. Preserve validation, security, accessibility, and tests when reducing code.
+- **Client support and availability:** The upstream README documents a Codex plugin. It is not installed or exposed in this session.
+- **Use in Aether:** Its minimal-change principles were applied manually. Ponytail commands were not invoked, and its plugin was not installed.
+- **Artifacts and validation:** No Ponytail-generated artifact or benchmark was produced. Repository verification remains documented in `docs/testing-methodology.md`.
+
+### skill-search
+
+- **Repository:** [sowhan/skill-search](https://github.com/sowhan/skill-search)
+- **Purpose and domain:** Semantic, on-demand retrieval of skill descriptions.
+- **Trigger and avoid:** Consider when a large skill catalog makes native skill discovery costly. Avoid adding a second retrieval layer when native discovery is cheaper.
+- **Client support and availability:** The upstream repository describes a Claude Code integration. It is not installed or exposed in this Codex session.
+- **Use in Aether:** Not invoked. Native skill discovery was sufficient for the earlier design work, and no skill retrieval was needed for this documentation update.
+- **Artifacts and validation:** No artifact or skill-search benchmark was produced.
+
+### Lean Coding Agent
+
+- **Repository:** [JeremyFaubert/lean-coding-agent-skill](https://github.com/JeremyFaubert/lean-coding-agent-skill)
+- **Purpose and domain:** Cross-compatible coding skill for reducing context reads, tool calls, verbose output, and unrelated edits while maintaining a correctness floor.
+- **Trigger and avoid:** Use its just-in-time retrieval and risk-based verification approach for coding tasks. Keep broader inspection for changes whose dependencies or impact require it.
+- **Client support and availability:** The upstream README documents Codex and Claude Code support. The skill is not installed in this environment.
+- **Use in Aether:** The supplied instructions were applied directly: bounded repository reads, no subagents, scoped documentation validation, and a clean stop after the requested workflow policy was recorded.
+- **Artifacts and validation:** No upstream files were copied or installed. This registry update passed the repository documentation checker.
+
+### Serena
+
+- **Repository:** [oraios/serena](https://github.com/oraios/serena)
+- **Purpose and domain:** MCP coding toolkit for semantic retrieval and editing, including symbol-level navigation.
+- **Trigger and avoid:** Consider for cross-file code navigation or refactoring where symbol references and call relationships matter. Avoid for a small known documentation edit.
+- **Client support and availability:** The project describes an MCP toolkit. No Serena MCP tools or local installation were available in this session.
+- **Use in Aether:** Not invoked. The current change only edits the skill registry, so symbol-level retrieval was unnecessary.
+- **Artifacts and validation:** No server configuration or generated artifact was added.
+
+### Token Optimizer MCP
+
+- **Repository:** [ooples/token-optimizer-mcp](https://github.com/ooples/token-optimizer-mcp)
+- **Purpose and domain:** MCP tools for measuring token savings and optimizing large context payloads.
+- **Trigger and avoid:** Consider for large logs, API responses, repeated search output, or other payloads where compression provides a measurable benefit. Avoid compressing small results or evidence needed for debugging.
+- **Client support and availability:** The upstream describes an MCP server. No matching MCP tools or local installation were available in this session.
+- **Use in Aether:** Not invoked. Bounded command output and short summaries were used for this small update.
+- **Artifacts and validation:** No server configuration, compressed artifact, or token-savings benchmark was produced.
